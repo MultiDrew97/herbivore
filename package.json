@@ -11,6 +11,10 @@
 		"test": "npm run test:core && npm run test:api && npm run test:logger",
 		"test:core": "cd ./core && npm test",
 		"test:api": "cd ./api && npm test",
-		"test:log": "cd ./logging && npm test"
+		"test:log": "cd ./logging && npm test",
+		"upgrade": "npm run upgrade:core && npm run upgrade:api && npm run upgrade:logger",
+		"upgrade:core": "cd ./core && npm run upgrade",
+		"upgrade:api": "cd ./api && npm run upgrade",
+		"upgrade:log": "cd ./logging && npm run upgrade"
 	}
 }

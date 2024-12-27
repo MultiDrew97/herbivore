@@ -1,0 +1,10 @@
+{
+	"extends": "tsconfig.json",
+	"include": ["**/*.spec.ts"],
+	"compilerOptions": {
+		"outDir": "dist/spec"
+	}
+	/* "ts-node": {
+		"transpileOnly": true
+	} */
+}

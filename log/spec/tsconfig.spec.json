@@ -1,13 +1,11 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"target": "ES2020",
-		"module": "ES2020",
-		"types": ["jest"]
+		"types": ["jest"],
+		"outDir": "../dist/spec"
 	},
 	"ts-node": {
 		"transpileOnly": true
 	},
-	"files": [""],
 	"include": ["spec/**/*.spec.ts", "spec/**/*.d.ts"]
 }

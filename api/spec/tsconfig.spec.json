@@ -2,11 +2,11 @@
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
 		"types": ["jest"],
-		"outDir": "."
+		"outDir": "../dist/spec",
+		"rootDir": "."
 	},
 	"ts-node": {
 		"transpileOnly": true
 	},
-	"files": [],
-	"include": ["./**/*.[sS]pec.ts"]
+	"include": ["spec/**/*.spec.ts", "spec/**/*.d.ts"]
 }

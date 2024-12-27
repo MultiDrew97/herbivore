@@ -8,6 +8,7 @@
 		"lib": ["ES2022", "DOM"],
 		"importHelpers": true,
 		"forceConsistentCasingInFileNames": true,
+		"resolveJsonModule": true,
 		"strict": true,
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
