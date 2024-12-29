@@ -20,18 +20,20 @@ export function encrypt(value: string, salt?: string): string {
 export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /**
- * Format a string of numbers to be in a phone format
+ * Format a string of numbers to be in a phone format of (###) ###-#### x###...
  * @param phone The phone number to format
  * @returns
  */
 export function formatPhone(phone: string, ext?: string): string {
 	phone = phone.trim()
-	phone = phone.replaceAll(/[()\s+-]/gi, '')
-	console.debug(phone)
 
 	if (isEmpty(phone)) return ''
 	if (phone.length < 10) throw new ArgumentError('Invalid length')
+
+	phone = phone.replaceAll(/[()\s+-]/gi, '')
+	console.debug(phone)
+
 	if (/[^\d+]/i.test(phone)) throw new ArgumentError('Invalid characters')
 
-	return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)} ${(ext ? `x${ext}` : '')}`.trim()
+	return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)} ${ext ? `x${ext}` : ''}`.trim()
 }

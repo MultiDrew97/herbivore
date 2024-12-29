@@ -1,13 +1,12 @@
 // import { configDotenv } from 'dotenv'
 import { resolve } from 'path'
 import { JestConfigWithTsJest, pathsToModuleNameMapper } from 'ts-jest'
-import { compilerOptions } from './tsconfig.json'
-import { merge } from 'lodash'
+import { compilerOptions } from '../tsconfig.spec.json'
 
 /**
  * Whether to silence console output during tests
  */
-export const specialSilent = true
+export const silent = true
 
 /**
  *  The config for the jest test environment
@@ -15,7 +14,7 @@ export const specialSilent = true
 const jestConfig: JestConfigWithTsJest = {
 	errorOnDeprecated: true,
 	displayName: { name: 'Herbivore/Core', color: 'blueBright' },
-	detectLeaks: false,
+	detectLeaks: true,
 	detectOpenHandles: true,
 	moduleDirectories: ['node_modules'],
 	moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
@@ -26,7 +25,7 @@ const jestConfig: JestConfigWithTsJest = {
 	randomize: true,
 	rootDir: resolve(__dirname),
 	setupFilesAfterEnv: ['./jest.setup.ts'],
-	silent: !specialSilent,
+	silent: silent,
 	testEnvironment: 'node',
 	/* testEnvironmentOptions: configDotenv({
 		path: './.env.test',

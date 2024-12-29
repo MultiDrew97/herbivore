@@ -1,10 +1,12 @@
 {
-	"extends": "tsconfig.json",
-	"include": ["**/*.spec.ts"],
+	"extends": "../tsconfig.json",
+	"include": ["**/*.spec.ts", "**/*.d.ts"],
+	"exclude": ["node_modules", "lib"],
 	"compilerOptions": {
-		"outDir": "dist/spec"
+		"outDir": "lib/spec",
+		"rootDir": ".",
+		"baseUrl": ".",
+		"types": ["jest", "node"],
+		"paths": {}
 	}
-	/* "ts-node": {
-		"transpileOnly": true
-	} */
 }

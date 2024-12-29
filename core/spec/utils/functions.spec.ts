@@ -1,5 +1,4 @@
-import { ArgumentError } from './errors'
-import { formatPhone } from './functions'
+import { formatPhone } from '../../src/utils/functions'
 
 describe('Functions Tests', () => {
 	test('Phone Formatting', () => {
@@ -26,6 +25,13 @@ describe('Functions Tests', () => {
 
 		// Test invalid characters
 		expect(() => formatPhone('/*-+.!@$%^&&*^&*$fdsfjdkafbdsafiw123134321')).toThrow(/characters/i)
+
+		// Test ext placements
+		const ext = '1234'
+		expect(formatPhone(testPhone, ext)).toBe(`${formattedPhone} x${ext}`)
+		expect(formatPhone(testPhone, ext.slice(2))).toBe(`${formattedPhone} x${ext.slice(2)}`)
+		expect(formatPhone(testPhone)).toBe(formattedPhone)
+		expect(formatPhone(testPhone, '')).toBe(formattedPhone)
 
 		// MAYBE: Test for longer than 13? (i.e. (123) 456-789)
 	})

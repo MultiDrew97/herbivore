@@ -6,14 +6,14 @@ import { compilerOptions } from '../tsconfig.json'
 /**
  * Whether to silence console output during tests
  */
-export const specialSilent = false
+export const silent = true
 
 /**
  *  The config for the jest test environment
  */
 const jestConfig: JestConfigWithTsJest = {
 	errorOnDeprecated: true,
-	displayName: { name: 'PayinCred Unit Tests', color: 'blueBright' },
+	displayName: { name: 'Herbivore/Log', color: 'greenBright' },
 	detectLeaks: false,
 	detectOpenHandles: true,
 	moduleDirectories: ['node_modules'],
@@ -25,7 +25,7 @@ const jestConfig: JestConfigWithTsJest = {
 	randomize: true,
 	rootDir: resolve(__dirname),
 	setupFilesAfterEnv: ['./jest.setup.ts'],
-	silent: !specialSilent,
+	silent: silent,
 	testEnvironment: 'node',
 	/* testEnvironmentOptions: configDotenv({
 		path: './.env.test',

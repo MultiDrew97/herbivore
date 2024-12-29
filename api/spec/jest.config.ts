@@ -13,7 +13,7 @@ export const specialSilent = false
  */
 const jestConfig: JestConfigWithTsJest = {
 	errorOnDeprecated: true,
-	displayName: { name: 'PayinCred Unit Tests', color: 'blueBright' },
+	displayName: { name: 'Herbivore/API', color: 'yellowBright' },
 	detectLeaks: false,
 	detectOpenHandles: true,
 	moduleDirectories: ['node_modules'],

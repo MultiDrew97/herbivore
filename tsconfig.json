@@ -17,6 +17,7 @@
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
 		"moduleResolution": "Node16",
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"noErrorTruncation": true
 	}
 }

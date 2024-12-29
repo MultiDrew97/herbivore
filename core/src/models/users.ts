@@ -1,4 +1,4 @@
-import { IAuth } from 'lib/utils/interfaces'
+import { IAuth } from '../utils/interfaces'
 import { IDbEntry } from '.'
 
 export declare interface IUser extends IDbEntry {

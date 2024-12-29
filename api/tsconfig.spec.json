@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"types": ["jest"],
+		"outDir": "./lib/spec",
+		"rootDir": "./spec"
+	},
+	"include": ["spec"]
+}
