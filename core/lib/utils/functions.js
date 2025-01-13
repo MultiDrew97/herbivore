@@ -22,7 +22,7 @@ exports.encrypt = encrypt;
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 exports.wait = wait;
 /**
- * Format a string of numbers to be in a phone format
+ * Format a string of numbers to be in a phone format of (###) ###-#### x###...
  * @param phone The phone number to format
  * @returns
  */

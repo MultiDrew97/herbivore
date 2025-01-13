@@ -11,7 +11,7 @@ export declare function encrypt(value: string, salt?: string): string;
  */
 export declare const wait: (ms: number) => Promise<unknown>;
 /**
- * Format a string of numbers to be in a phone format
+ * Format a string of numbers to be in a phone format of (###) ###-#### x###...
  * @param phone The phone number to format
  * @returns
  */
