@@ -1,11 +1,11 @@
 {
-	"name": "@herbivore/logger",
+	"name": "@herbivore/log",
 	"version": "2.0.0",
 	"description": "Herbivore Project Pacakge - Log",
 	"author": "Herbivore",
 	"license": "MIT",
 	"main": "./lib/index.js",
-	"typings": "./lib/index.d.ts",
+	"types": "./lib/index.d.ts",
 	"files": [
 		"src",
 		"lib"

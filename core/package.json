@@ -4,6 +4,7 @@
 	"description": "Herbivore Project Package - Core",
 	"author": "Herbivore",
 	"license": "MIT",
+	"main": "./lib/index.js",
 	"types": "./lib/index.d.ts",
 	"exports": {
 		"./models/*": {
