@@ -1,20 +1,22 @@
 {
 	"scripts": {
-		"build": "npm run build:core && npm run build:api && npm run build:logger",
+		"build": "npm run build:core && npm run build:log",
 		"build:core": "cd ./core && npm run build",
-		"build:api": "cd ./api && npm run build",
 		"build:log": "cd ./logging && npm run build",
-		"publish": "npm run publish:core && npm run publish:api && npm run publish:logger",
+		"clean": "npm run clean:core && npm run clean:log",
+		"clean:core": "cd ./core && npm run clean",
+		"clean:log": "cd ./logging && npm run clean",
+		"rebuild": "npm run rebuild:core && npm run rebuild:log",
+		"rebuild:core": "cd ./core && npm run rebuild",
+		"rebuild:log": "cd ./logging && npm run rebuild",
+		"publish": "npm run publish:core && npm run publish:log",
 		"publish:core": "cd ./core && npm run publish",
-		"publish:api": "cd ./api && npm run publish",
 		"publish:log": "cd ./logging && npm run publish",
-		"test": "npm run test:core && npm run test:api && npm run test:logger",
+		"test": "npm run test:core && npm run test:log",
 		"test:core": "cd ./core && npm test",
-		"test:api": "cd ./api && npm test",
 		"test:log": "cd ./logging && npm test",
-		"upgrade": "npm run upgrade:core && npm run upgrade:api && npm run upgrade:logger",
+		"upgrade": "npm run upgrade:core && npm run upgrade:log",
 		"upgrade:core": "cd ./core && npm run upgrade",
-		"upgrade:api": "cd ./api && npm run upgrade",
-		"upgrade:log": "cd ./logging && npm run upgrade"
+		"upgrade:log": "cd ./log && npm run upgrade"
 	}
 }

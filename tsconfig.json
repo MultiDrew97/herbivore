@@ -1,7 +1,8 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
-		"module": "Node16",
+		"module": "NodeNext",
+		"moduleResolution": "nodenext",
 		"target": "ES2022",
 		"allowJs": false,
 		"skipLibCheck": true,
@@ -16,7 +17,6 @@
 		"downlevelIteration": true,
 		"experimentalDecorators": true,
 		"allowSyntheticDefaultImports": true,
-		"moduleResolution": "Node16",
 		"esModuleInterop": true,
 		"noErrorTruncation": true
 	}
