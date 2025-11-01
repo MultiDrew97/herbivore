@@ -1,41 +1,23 @@
-// import { configDotenv } from 'dotenv'
-import { resolve } from 'path'
+import { join, resolve } from 'path'
 import { JestConfigWithTsJest, pathsToModuleNameMapper } from 'ts-jest'
-import { compilerOptions } from '../tsconfig.json'
+import createDefaultHerbConfig from '../../jest.config'
 
-/**
- * Whether to silence console output during tests
- */
-export const silent = true
+// import {compilerOptions} from '../tsconfig.spec.json' with {type: "json"}
+const { compilerOptions } = require('../tsconfig.spec.json')
 
-/**
- *  The config for the jest test environment
- */
+/*  */
 const jestConfig: JestConfigWithTsJest = {
-	errorOnDeprecated: true,
-	displayName: { name: 'Herbivore/Log', color: 'greenBright' },
-	detectLeaks: false,
-	detectOpenHandles: true,
-	moduleDirectories: ['node_modules'],
-	moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-		prefix: '<rootDir>/',
+	...createDefaultHerbConfig({
+		tsconfig: join(__dirname, '../tsconfig.spec.json'),
 	}),
-	// onlyChanged: true,
-	preset: 'ts-jest',
-	randomize: true,
+	displayName: { name: 'Herbivore/Log', color: 'greenBright' },
+	moduleDirectories: ['node_modules'],
 	rootDir: resolve(__dirname),
 	setupFilesAfterEnv: ['./jest.setup.ts'],
-	silent: silent,
-	testEnvironment: 'node',
-	/* testEnvironmentOptions: configDotenv({
-		path: './.env.test',
-		override: true,
-	}).parsed, */
-	transform: {
-		'^.+\\.tsx?$': ['ts-jest', {}],
-	},
-	watchman: true,
-	verbose: false,
+	moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths ?? {}, {
+		prefix: '<rootDir>/',
+		useESM: true,
+	}),
 }
 
 export default jestConfig

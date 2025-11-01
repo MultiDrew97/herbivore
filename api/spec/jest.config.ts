@@ -3,13 +3,15 @@ import { JestConfigWithTsJest, pathsToModuleNameMapper } from 'ts-jest'
 import createDefaultHerbConfig from '../../jest.config'
 
 import { compilerOptions } from '../tsconfig.spec.json'
+
 // const { compilerOptions } = require('../tsconfig.spec.json')
 
 const jestConfig: JestConfigWithTsJest = {
 	...createDefaultHerbConfig({
 		tsconfig: join(__dirname, '../tsconfig.spec.json'),
 	}),
-	displayName: { name: 'Herbivore/Core', color: 'blueBright' },
+	detectLeaks: false,
+	displayName: { name: 'Herbivore/API', color: 'yellowBright' },
 	moduleDirectories: ['node_modules'],
 	rootDir: resolve(__dirname),
 	setupFilesAfterEnv: ['./jest.setup.ts'],

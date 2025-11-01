@@ -1,0 +1,65 @@
+{
+	"name": "@herbivore/api",
+	"version": "0.1.0",
+	"author": "Herbivore",
+	"description": "Herbivore Project Package - API",
+	"license": "MIT",
+	"main": "./lib/index.js",
+	"types": "./lib/index.d.ts",
+	"scripts": {
+		"clean": "rm -rf lib",
+		"build": "tsc -p ./tsconfig.json",
+		"rebuild": "npm run clean && npm run build",
+		"test": "jest --config=./spec/jest.config.ts",
+		"prepublishOnly": "npm run rebuild",
+		"publish:prod": "echo NOT SETUP YET && exit 1",
+		"publish:dry": "npm publish --access public --dry-run",
+		"upgrade": "npm update --save && npm update --save-dev"
+	},
+	"exports": {
+		"./routes": {
+			"types": "./lib/routes.d.ts",
+			"default": "./lib/routes.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"peerDependencies": {
+		"express": "^5.1.0",
+		"tslib": "^2.8.1",
+		"helmet": "^8.1.0",
+		"lodash": "^4.17.21"
+	},
+	"dependencies": {
+		"reflect-metadata": "^0.2.2"
+	},
+	"devDependencies": {
+		"@types/jest": "^30.0.0",
+		"@types/lodash": "^4.17.20",
+		"@types/express": "^5.0.5",
+		"jest": "^30.2.0",
+		"ts-jest": "^29.4.5",
+		"typescript": "^5.9.3",
+		"axios": "^1.13.1"
+	},
+	"files": [
+		"lib",
+		"src",
+		"spec"
+	],
+	"directories": {
+		"lib": "./lib",
+		"test": "./spec"
+	},
+	"keywords": [
+		"api",
+		"herbivore",
+		"node",
+		"express",
+		"ts"
+	],
+	"repository": {
+		"url": "https://github.com/MultiDrew97/herbivore",
+		"directory": "api",
+		"type": "git"
+	}
+}
