@@ -1,3 +1,3 @@
 import { silenceLogs } from '../../jest.helpers'
 
-silenceLogs('info', 'log', 'warn')
+silenceLogs('debug', 'warn', 'info', 'log')

@@ -1,10 +1,10 @@
 {
 	"extends": "../tsconfig.spec.json",
-	"include": ["./spec"],
+	"include": ["spec"],
 	"exclude": ["node_modules", "lib"],
 	"compilerOptions": {
 		"outDir": "./lib/spec",
-		"rootDir": ".",
+		"rootDir": "./spec",
 		"types": ["jest", "node"],
 		"paths": {}
 	}

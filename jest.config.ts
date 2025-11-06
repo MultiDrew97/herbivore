@@ -1,4 +1,5 @@
 import { merge } from 'lodash'
+import { resolve } from 'path'
 import { JestConfigWithTsJest, createDefaultEsmPreset, TsJestTransformerOptions } from 'ts-jest'
 
 type JestTransformOptions = Required<Pick<TsJestTransformerOptions, 'tsconfig'>> &
@@ -9,7 +10,7 @@ export default function createDefaultHerbConfig(options?: JestTransformOptions):
 	const baseOptions: TsJestTransformerOptions = {
 		diagnostics: {
 			pretty: true,
-			ignoreCodes: ['151002'],
+			// ignoreCodes: ['151002'],
 		},
 	}
 
@@ -26,8 +27,7 @@ export default function createDefaultHerbConfig(options?: JestTransformOptions):
 		preset: 'ts-jest',
 		randomize: true,
 		watchman: true,
-		// setupFilesAfterEnv: ['./jest.setup.ts'],
-		// moduleFileExtensions: ['ts', 'tsx', 'cjs', 'js', 'json'],
+		setupFilesAfterEnv: [resolve(__dirname, './jest.setup.ts')],
 		transform: {
 			'^.+\\.tsx?$': 'ts-jest',
 		},

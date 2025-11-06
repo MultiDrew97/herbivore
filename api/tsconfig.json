@@ -1,12 +1,12 @@
 {
 	"extends": "../tsconfig.json",
-	"include": ["src"],
+	"include": ["src", "spec/authenticators.spec.ts"],
 	"exclude": ["node_modules", "lib", "spec"],
 	"compilerOptions": {
 		"outDir": "./lib",
 		"rootDir": "./src",
 		"paths": {
-			
+
 		}
 	}
 }

@@ -1,22 +1,26 @@
+export * as JestModifiers from './jest.d' // Contains custom matchers and Jest customizations
+
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { createServer } from 'http'
-import { constants } from 'http2'
 import { createHerbAPI, HerbAPIConfig } from './api/src'
+import { merge } from 'lodash'
 
 export const DEFAULT_PORT: number = 3000
 export const DEFAULT_HOST: string = 'localhost'
 export const DEFAULT_BASE_URL: string = `http://${DEFAULT_HOST}:${DEFAULT_PORT}`
 export const baseAxiosOptions: AxiosRequestConfig = {
 	baseURL: DEFAULT_BASE_URL,
-	timeoutErrorMessage: 'ERROR - CUSTOM TIMEOUT MESSAGE',
+	headers: {
+		Accept: 'application/json',
+	},
 }
 
-export function responseContaining(data: any, status: number = constants.HTTP_STATUS_OK) {
-	return expect.objectContaining({
-		status,
-		data: data && expect.objectContaining(data),
-	})
-}
+// export function responseContaining(data: any = {}, status: number = constants.HTTP_STATUS_OK) {
+// 	return expect.objectContaining({
+// 		status,
+// 		data: data && expect.objectContaining(data),
+// 	})
+// }
 
 export function createTestServer(apiConfig: HerbAPIConfig, onListening?: () => void) {
 	return createServer(createHerbAPI(apiConfig))
@@ -29,8 +33,10 @@ export function createTestServer(apiConfig: HerbAPIConfig, onListening?: () => v
 		})
 }
 
-export async function callAxios(url: string, config: AxiosRequestConfig) {
-	return await axios(url, config).catch(logFetchError).catch(handleFetchError)
+export async function callAPI(url: string, cfg?: AxiosRequestConfig) {
+	const config = { ...baseAxiosOptions }
+	merge(config, cfg)
+	return await axios(url, config).catch(logError).catch(handleError)
 }
 
 /** An empty function with no output */
@@ -40,22 +46,21 @@ export function noop() {}
  * A handler for logging any info about fetch errors during tests
  * @param err The err being caught
  */
-export function logFetchError(err: AxiosError) {
+function logError(err: AxiosError) {
 	console.error(err.message)
 	console.error(err.stack)
-	throw err
+	console.error(err.toJSON())
+	console.error(err.response?.status)
+	console.error(err.response?.data)
+	return Promise.reject(err)
 }
 
 /**
  * A handler for dealing with any fetch errors during tests
  * @param err The error being handled
  */
-export function handleFetchError({ response, request }: AxiosError) {
-	if (!response) return
-
-	console.error(response.status)
-	console.error(response.data)
-	return response
+function handleError(err: AxiosError) {
+	return Promise.reject(err)
 }
 
 type LogTypes = 'log' | 'debug' | 'error' | 'warn' | 'info'
@@ -68,4 +73,17 @@ export function silenceLogs(...types: LogTypes[]) {
 	types.forEach((t) => {
 		jest.spyOn(console, t).mockImplementation(noop)
 	})
+}
+
+export function checkCirculars() {
+	const seen = new WeakSet()
+	return (key: string, value: any) => {
+		if (value && typeof value === 'object') {
+			if (seen.has(value)) {
+				return '[Circular]'
+			}
+			seen.add(value)
+		}
+		return value
+	}
 }

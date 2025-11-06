@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
 import express, { RouterOptions } from 'express'
-import { ExpressRouteHandler, ControllerClass } from './index'
+import { ControllerClass, ExpressRouteHandler } from './index'
 
 export const PREFIX = Symbol('prefix')
 export const ROUTES = Symbol('routes')
@@ -9,6 +9,8 @@ export const ROUTE_OPTIONS = Symbol('route_options')
 
 /** The available methods that can be used for registration */
 type Method = 'get' | 'post' | 'delete' | 'put' | 'options' | 'patch'
+
+/** The internal config for how the routes are defined */
 type RouteConfig = {
 	method: Method
 	path: string
@@ -26,8 +28,10 @@ type RouteConfig = {
 export function Controller(pfx: string, opts?: RouterOptions): ClassDecorator {
 	console.info(`Defining controller for ${pfx}...`)
 	return (target: ControllerClass) => {
+		console.info(`Defining controller for '${pfx}'...`)
 		Reflect.defineMetadata(PREFIX, pfx, target)
 		Reflect.defineMetadata(ROUTE_OPTIONS, opts, target)
+		console.info(`'${pfx}' controller has been defined`)
 	}
 }
 
@@ -38,29 +42,29 @@ export function Controller(pfx: string, opts?: RouterOptions): ClassDecorator {
  * @returns
  */
 export function Route(method: Method, path: string): MethodDecorator {
-	console.info(`Defining ${method} route for ${path}`)
 	return (target: ControllerClass, handler: symbol | string, _: PropertyDescriptor) => {
+		console.info(`Defining endpoint ${method.toUpperCase()} ${path}...`)
 		/*
 		FIXME: Verification
 
 		Verifiy that this has to be target.constructor and there is no way to have it as target only
 		*/
-		const routes: RouteConfig[] = Reflect.getMetadata(ROUTES, target.constructor) ?? []
+		const ctor = target.constructor
+		const routes: RouteConfig[] = Reflect.getMetadata(ROUTES, ctor) ?? []
 		routes.push({ method, path, handler })
-		Reflect.defineMetadata(ROUTES, routes, target.constructor)
+		Reflect.defineMetadata(ROUTES, routes, ctor)
 	}
 }
 
 /**
  *	Register all the provided controllers with the express api backend
- * @param controllers The array of controllers to register for the application
- * @returns The array of router objects with their prefixes created from the provided controllers
+ * @param controllers The list of controllers to register for the application
+ * @returns The list of router objects with their prefixes created from the provided controllers
  *
  * @see {@link ControllerClass}
  */
 export function RegisterControllers(...controllers: ControllerClass[]) {
 	console.info(`Registering ${controllers.length} controller(s)...`)
-	// const app = express()
 
 	return controllers.map((controller) => {
 		const c = new controller()
@@ -70,16 +74,13 @@ export function RegisterControllers(...controllers: ControllerClass[]) {
 		const rtr = express.Router(opts)
 
 		console.info(`Registering '${pfx}' with ${rts.length} endpoints...`)
-		console.log(rts)
+		console.debug(rts)
 
 		rts?.forEach(({ method, path, handler }) => {
-			console.info(`Mounting endpoint '${path}' for '${pfx}'...`)
-			rtr[method](path, c[handler].bind(c))
+			console.info(`Mounting endpoint ${method.toUpperCase()} '${path}' for '${pfx}'...`)
+			rtr[method](path, c[handler].bind(c) as ExpressRouteHandler)
 		})
 
 		return { path: pfx, router: rtr }
-		// app.use(pfx, rtr)
 	})
-
-	// return app
 }

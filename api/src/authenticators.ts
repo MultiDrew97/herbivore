@@ -1,0 +1,133 @@
+import { decode } from '@herbivore/core/utils'
+import { ArgumentError, AuthenticationError } from '@herbivore/core/utils/errors'
+import { IAuth } from '@herbivore/core/utils/interfaces'
+import { IncomingHttpHeaders } from 'http2'
+import { AuthenticationMiddleware, ConfigError } from './index'
+
+type AuthType = 'basic' | 'token'
+export type AuthenticatorFactory<T> = (cfg: T) => AuthenticationMiddleware
+function getAuthHeader(type: AuthType, headers: IncomingHttpHeaders) {
+	if (!headers.authorization) throw new AuthenticationError('No auth provided')
+
+	switch (type) {
+		case 'basic':
+			break
+		case 'token':
+			break
+		default:
+			throw new ArgumentError(`Unknown auth type '${type}'`)
+	}
+
+	return headers.authorization
+}
+
+/**
+ * The config for creating a credential based authenticator middleware
+ */
+export type BasicAuthConfig = {
+	encrypted: boolean
+	credentials: IAuth
+	encrypt?: (value: string, salt?: string) => string
+}
+/**
+ * A factory for creating a new credentials based authenticor middleware. If a failed authentication attempt occurs, it will call the provided error handler and respond accordingly
+ * @param cfg The config for the authenticator
+ * @returns The authentication middleware that handles credential authentication
+ *
+ * @see {@link BasicAuthConfig}
+ *
+ * @throws ConfigError
+ */
+export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> = (
+	cfg: BasicAuthConfig
+): AuthenticationMiddleware => {
+	console.info('Validating basic config...')
+	console.debug('Provided Config: ', cfg)
+	console.debug('Encrypted? ', cfg.encrypted)
+	console.debug('Encrypt Missing? ', !cfg.encrypt)
+	console.debug('Invalid? ', cfg.encrypted && !cfg.encrypt)
+	if (cfg.encrypted && !cfg.encrypt) {
+		throw new ConfigError('BasicAuthMiddleware - Must provide encrypt function if credentials are encrypted')
+	}
+	console.info('Valid basic config')
+
+	function getAuth(authHeader: string): IAuth {
+		console.debug('Provided Header: ', authHeader)
+		const [username, password] = decode(authHeader.split(/\s/)[1]).split(':')
+
+		return { username, password }
+	}
+
+	function validatePassword(password: string) {
+		if (!cfg.encrypt && cfg.encrypted)
+			throw new ConfigError('Must provide an encryption function when using encrypt')
+
+		return cfg.encrypted && cfg.encrypt
+			? cfg.encrypt(password, cfg.credentials.salt) == cfg.credentials.password
+			: password == cfg.credentials.password
+	}
+
+	return (req, _, next) => {
+		try {
+			console.info('Validating request with credential based authentication...')
+			console.debug('Provided config: ', cfg)
+			const auth = getAuthHeader('basic', req.headers)
+
+			if (!/Basic.+/.test(auth)) throw new AuthenticationError(`Improper authentication provided`)
+
+			const { username, password } = getAuth(auth)
+
+			console.debug('Config Username: ', cfg.credentials.username)
+			console.debug('Provided Username: ', username)
+			console.debug('Correct? ', username == cfg.credentials.username)
+			console.debug('Correct? ', username === cfg.credentials.username)
+
+			if (username != cfg.credentials.username) throw new AuthenticationError('Invalid username provided')
+
+			if (!password || !validatePassword(password)) throw new AuthenticationError('Invalid password provided')
+
+			next()
+		} catch (err: any) {
+			console.error(`BasicAuthenticator - ${err.message}`)
+			next(err)
+		}
+	}
+}
+
+/**
+ * The config for creating a token based authenticator middleware
+ */
+export type TokenAuthConfig = {
+	validate: (token: string) => boolean
+}
+/**
+ * A factory for creating a new token based authenticor middleware.
+ *
+ *  If a failed authentication attempt occurs, it will call the provided error handler and respond accordingly
+ * @param cfg The config for the authenticator
+ * @returns The authentication middleware that handles token based authentication
+ *
+ * @see {@link TokenAuthConfig}
+ *
+ * @throws ConfigError
+ */
+export function TokenAuthMiddlewareFactory(cfg: TokenAuthConfig): AuthenticationMiddleware {
+	console.info('Validating token config...')
+	// Run config validation for this authenticator
+	console.info('Valid token config')
+
+	return (req, _, next) => {
+		try {
+			console.info('Validating request with token based authentication...')
+
+			const token = getAuthHeader('token', req.headers)
+
+			if (!cfg.validate(token)) throw new AuthenticationError('Invalid token provided')
+
+			next()
+		} catch (err: any) {
+			console.error(`TokenAuthenticator - ${err.message}`)
+			next(err)
+		}
+	}
+}

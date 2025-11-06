@@ -1,14 +1,12 @@
 {
 	"extends": "./tsconfig.json",
-	"files": ["./jest.config.ts", "./jest.setup.ts"],
+	"files": ["./jest.config.ts", "./jest.setup.ts", "./jest.d.ts"],
 	"compilerOptions": {
 		"noEmit": true,
 		"allowImportingTsExtensions": true,
 		"isolatedModules": true,
 		"types": ["jest", "node"],
-		"paths": {
-			"@tests": ["./jest.config.ts"]
-		}
+		"paths": {}
 	},
 	"ts-node": {
 		"transpileOnly": true
