@@ -1,8 +1,7 @@
 import { Server } from 'http'
 import { constants } from 'http2'
-import { callAPI, createTestServer } from '../../jest.helpers'
-import { PREFIX, ROUTE_OPTIONS, ROUTES } from '../src/routes'
-import { opts, prefix, TestController } from './jest.helpers'
+import { PREFIX, ROUTE_OPTIONS, ROUTES } from '@src/routes'
+import { opts, prefix, TestController, callAPI, createTestServer } from '@spec/helpers'
 
 describe('Route Decorators', () => {
 	test('Controller', () => {

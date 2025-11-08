@@ -1,14 +1,14 @@
 import 'reflect-metadata'
 
-import express, { RouterOptions } from 'express'
-import { ControllerClass, ExpressRouteHandler } from './index'
+import express, { RequestHandler, RequestParamHandler, RouterOptions } from 'express'
+import { ControllerClass } from '@src'
 
 export const PREFIX = Symbol('prefix')
 export const ROUTES = Symbol('routes')
 export const ROUTE_OPTIONS = Symbol('route_options')
 
 /** The available methods that can be used for registration */
-type Method = 'get' | 'post' | 'delete' | 'put' | 'options' | 'patch'
+type Method = 'get' | 'post' | 'delete' | 'put' | 'options' | 'patch' | 'param'
 
 /** The internal config for how the routes are defined */
 type RouteConfig = {
@@ -35,17 +35,19 @@ export function Controller(pfx: string, opts?: RouterOptions): ClassDecorator {
 	}
 }
 
+type RouteHandler<M extends Method> = M extends 'param' ? RequestParamHandler : RequestHandler
+
 /**
  * A method decorator for a route handler. Must be used within a Controller marked class
  * @param method The method this method will handle
  * @param path The path the route is for
  * @returns
  */
-export function Route(method: Method, path: string): MethodDecorator {
-	return (target: ControllerClass, handler: symbol | string, _: PropertyDescriptor) => {
+export function Route<M extends Method>(method: M, path: string) {
+	return (target: ControllerClass, handler: symbol | string, _desc: TypedPropertyDescriptor<RouteHandler<M>>) => {
 		console.info(`Defining endpoint ${method.toUpperCase()} ${path}...`)
 		/*
-		FIXME: Verification
+		MAYBE: Verification
 
 		Verifiy that this has to be target.constructor and there is no way to have it as target only
 		*/
@@ -78,7 +80,13 @@ export function RegisterControllers(...controllers: ControllerClass[]) {
 
 		rts?.forEach(({ method, path, handler }) => {
 			console.info(`Mounting endpoint ${method.toUpperCase()} '${path}' for '${pfx}'...`)
-			rtr[method](path, c[handler].bind(c) as ExpressRouteHandler)
+			switch (method) {
+				case 'param':
+					rtr[method](path, c[handler].bind(c) as RequestParamHandler)
+					break
+				default:
+					rtr[method](path, c[handler].bind(c) as RequestHandler)
+			}
 		})
 
 		return { path: pfx, router: rtr }

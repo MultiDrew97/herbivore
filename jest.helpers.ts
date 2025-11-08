@@ -1,8 +1,6 @@
-export * as JestModifiers from './jest.d' // Contains custom matchers and Jest customizations
+export * as JestModifiers from './jest.matchers.ts' // Contains custom matchers and Jest customizations
 
-import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import { createServer } from 'http'
-import { createHerbAPI, HerbAPIConfig } from './api/src'
+import axios, { AxiosError, type AxiosRequestConfig } from 'axios'
 import { merge } from 'lodash'
 
 export const DEFAULT_PORT: number = 3000
@@ -21,17 +19,6 @@ export const baseAxiosOptions: AxiosRequestConfig = {
 // 		data: data && expect.objectContaining(data),
 // 	})
 // }
-
-export function createTestServer(apiConfig: HerbAPIConfig, onListening?: () => void) {
-	return createServer(createHerbAPI(apiConfig))
-		.on('close', () => {
-			console.info('Test server has been closed')
-		})
-		.listen(DEFAULT_PORT, DEFAULT_HOST, () => {
-			console.info(`Test server listening on port ${DEFAULT_PORT}`)
-			onListening && onListening()
-		})
-}
 
 export async function callAPI(url: string, cfg?: AxiosRequestConfig) {
 	const config = { ...baseAxiosOptions }

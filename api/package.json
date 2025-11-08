@@ -6,11 +6,12 @@
 	"license": "MIT",
 	"main": "./lib/index.js",
 	"types": "./lib/index.d.ts",
+	"type": "module",
 	"scripts": {
+		"build": "tsc",
 		"clean": "rm -rf lib",
-		"build": "tsc -p ./tsconfig.json",
 		"rebuild": "npm run clean && npm run build",
-		"test": "jest --config=./spec/jest.config.ts",
+		"test": "jest --config=./jest.config.ts",
 		"prepublishOnly": "npm run rebuild",
 		"publish:prod": "echo NOT SETUP YET && exit 1",
 		"publish:dry": "npm publish --access public --dry-run",
@@ -19,7 +20,13 @@
 	"exports": {
 		"./routes": {
 			"types": "./lib/routes.d.ts",
-			"default": "./lib/routes.js"
+			"require": "./lib/routes.js",
+			"default": "./src/routes.ts"
+		},
+		"./authenticators": {
+			"types": "./lib/authenticators.d.ts",
+			"require": "./lib/authenticators.js",
+			"default": "./src/authenticators.ts"
 		},
 		"./package.json": "./package.json"
 	},
@@ -43,9 +50,8 @@
 		"axios": "^1.13.1"
 	},
 	"files": [
-		"lib",
-		"src",
-		"spec"
+		"./lib",
+		"./src"
 	],
 	"directories": {
 		"lib": "./lib",

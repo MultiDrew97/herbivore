@@ -1,11 +1,17 @@
 {
-	"extends": "../tsconfig.spec.json",
+	"extends": "../tsconfig.base.spec.json",
 	"include": ["spec"],
+	"files": ["./jest.config.ts", "./jest.setup.ts", "./jest.helpers.ts"],
 	"exclude": ["node_modules", "lib"],
+	"references": [{ "path": "../tsconfig.base.spec.json" }, { "path": "./tsconfig.json" }],
 	"compilerOptions": {
 		"outDir": "./lib/spec",
-		"rootDir": "./spec",
-		"types": ["jest", "node"],
-		"paths": {}
+		"rootDir": ".",
+		"paths": {
+			"@base/*": ["../jest.*.ts"],
+			"@spec/*": ["./jest.*.ts"],
+			"@src": ["./src/index.ts"],
+			"@src/*": ["./src/*.ts"]
+		}
 	}
 }

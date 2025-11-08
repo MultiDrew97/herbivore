@@ -6,32 +6,34 @@
 	"license": "MIT",
 	"main": "./lib/index.js",
 	"types": "./lib/index.d.ts",
-	"exports": {
-		"./models/*": {
-			"types": "./lib/models/index.d.ts",
-			"default": "./lib/models/*.js"
-		},
-		"./utils/*": {
-			"types": "./lib/utils/index.d.ts",
-			"default": "./lib/utils/*.js"
-		},
-		"./package.json": "./package.json"
-	},
-	"files": [
-		"lib",
-		"src"
-	],
+	"type": "module",
 	"scripts": {
 		"build": "tsc",
 		"clean": "rm -rf lib",
 		"rebuild": "npm run clean && npm run build",
-		"build:test": "tsc -p ./tsconfig.spec.json",
-		"test": "jest --config=./spec/jest.config.ts",
+		"test": "jest --config=./jest.config.ts",
 		"prepublishOnly": "npm run rebuild",
 		"publish:prod": "npm publish --access public",
 		"publish:dry": "npm publish --access public --dry-run",
 		"upgrade": "npm update --save && npm update --save-dev"
 	},
+	"exports": {
+		"./models/*": {
+			"types": "./lib/models/index.d.ts",
+			"require": "./lib/models/*.js",
+			"default": "./src/models/*.ts"
+		},
+		"./utils/*": {
+			"types": "./lib/utils/index.d.ts",
+			"require": "./lib/utils/*.js",
+			"default": "./src/utils/*.ts"
+		},
+		"./package.json": "./package.json"
+	},
+	"files": [
+		"./lib",
+		"./src"
+	],
 	"dependencies": {
 		"js-base64": "^3.7.8",
 		"mongodb": "^6.20.0",
@@ -43,7 +45,6 @@
 		"@skypack/package-check": "^0.2.2",
 		"@types/jest": "^30.0.0",
 		"@types/lodash": "^4.17.20",
-		"@types/node": "^18.19.130",
 		"jest": "^30.2.0",
 		"lodash": "^4.17.21",
 		"ts-jest": "^29.4.5",

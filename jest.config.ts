@@ -1,65 +1,35 @@
-import { merge } from 'lodash'
 import { resolve } from 'path'
-import { JestConfigWithTsJest, createDefaultEsmPreset, TsJestTransformerOptions } from 'ts-jest'
+import { type TsJestTransformerOptions, type JestConfigWithTsJest, createDefaultEsmPreset, pathsToModuleNameMapper } from 'ts-jest'
 
-type JestTransformOptions = Required<Pick<TsJestTransformerOptions, 'tsconfig'>> &
-	Pick<TsJestTransformerOptions, 'babelConfig'>
-type HerbJestConfig = Omit<JestConfigWithTsJest, 'rootDir' | 'moduleNameMapper' | 'displayName'>
+import pkg from './package.json' with {type: "json"}
 
-export default function createDefaultHerbConfig(options?: JestTransformOptions): HerbJestConfig {
-	const baseOptions: TsJestTransformerOptions = {
+const config: JestConfigWithTsJest = {
+	...createDefaultEsmPreset({
+		tsconfig: '<rootDir>/tsconfig.spec.json',
+		useESM: true,
 		diagnostics: {
 			pretty: true,
 			// ignoreCodes: ['151002'],
 		},
-	}
-
-	// if (options) {
-	// 	console.info('Applying custom Jest transformer options...')
-	// 	merge(baseOptions, options)
+	} as TsJestTransformerOptions),
+	preset: 'ts-jest',
+	testEnvironment: 'node',
+	verbose: true,
+	silent: true,
+	detectLeaks: true,
+	detectOpenHandles: true,
+	errorOnDeprecated: true,
+	randomize: true,
+	watchman: true,
+	// globalSetup: resolve(import.meta.dirname, "./jest.setup.ts"),
+	setupFilesAfterEnv: [resolve('./jest.setup.ts')],
+	moduleDirectories: ['<rootDir>/node_modules'],
+	projects: pkg.workspaces.map((w: string) => resolve(`./${w}/jest.config.ts`)),
+	// moduleNameMapper: {
+	// 	...pathsToModuleNameMapper(specConfig.compilerOptions.paths, {
+	// 		useESM: true,
+	// 		prefix: import.meta.dirname
+	// 	})
 	// }
-
-	return {
-		...createDefaultEsmPreset(merge(baseOptions, options)),
-		errorOnDeprecated: true,
-		detectLeaks: true,
-		detectOpenHandles: true,
-		preset: 'ts-jest',
-		randomize: true,
-		watchman: true,
-		setupFilesAfterEnv: [resolve(__dirname, './jest.setup.ts')],
-		transform: {
-			'^.+\\.tsx?$': 'ts-jest',
-		},
-	}
 }
-
-// const baseConfig: JestConfigWithTsJest = {
-// 	...createDefaultEsmPreset({}),
-// 	errorOnDeprecated: true,
-// 	displayName: { name: 'Herbivore/Core', color: 'blueBright' },
-// 	detectLeaks: true,
-// 	detectOpenHandles: true,
-// 	moduleDirectories: ['node_modules'],
-// 	moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-// 		prefix: '<rootDir>/',
-// 	}),
-// 	// onlyChanged: true,
-// 	preset: 'ts-jest',
-// 	randomize: true,
-// 	rootDir: resolve(__dirname),
-// 	setupFilesAfterEnv: ['./jest.setup.ts'],
-// 	silent: silent,
-// 	testEnvironment: 'node',
-// 	/* testEnvironmentOptions: configDotenv({
-// 		path: './.env.test',
-// 		override: true,
-// 	}).parsed, */
-// 	transform: {
-// 		'^.+\\.tsx?$': ['ts-jest', {}],
-// 	},
-// 	watchman: true,
-// 	verbose: false,
-// }
-
-// export default baseConfig;
+export default config

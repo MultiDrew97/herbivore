@@ -1,7 +1,6 @@
-import './jest.d' // Contains custom matchers and Jest customizations
+import '@base/matchers'
 
-import { AxiosResponse } from 'axios'
-import { checkCirculars } from './jest.helpers'
+import { type AxiosResponse } from 'axios'
 
 expect.extend({
 	async toMatchResponse<T extends AxiosResponse = AxiosResponse>(
@@ -10,10 +9,9 @@ expect.extend({
 		exp: T
 	): Promise<jest.CustomMatcherResult> {
 		const { printReceived, printExpected, matcherHint } = this.utils
-		let pass: boolean
-		// const pass: boolean = (Object.keys(expected) as (keyof T)[]).every((k) => k in res && res[k] === expected[k])
+
 		if (res === undefined) {
-			pass = exp === undefined
+			let pass = exp === undefined
 
 			return {
 				pass,
@@ -30,7 +28,7 @@ expect.extend({
 			}
 		}
 		// const pass: boolean = this.Equals(res, expect.objectContaining(expected))
-		pass = (Object.keys(exp) as (keyof T)[]).filter((k) => !this.equals(res[k], exp[k])).length === 0
+		let pass = (Object.keys(exp) as (keyof T)[]).filter((k) => !this.equals(res[k], exp[k])).length === 0
 		return {
 			pass,
 			message: () => {

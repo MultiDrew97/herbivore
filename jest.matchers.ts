@@ -1,5 +1,5 @@
-import 'jest'
-import { AxiosResponse } from 'axios'
+// Contains custom matchers and Jest customizations
+import { type AxiosResponse } from 'axios'
 
 declare global {
 	namespace jest {

@@ -1,10 +1,9 @@
-import { AxiosRequestConfig } from 'axios'
+import { type AxiosRequestConfig } from 'axios'
 import { Server } from 'http'
 import { constants } from 'http2'
-import { callAPI, createTestServer } from '../../jest.helpers'
-import { AuthenticationMiddleware, ConfigError } from '../src'
-import { AuthenticatorFactory, BasicAuthMiddlewareFactory, TokenAuthMiddlewareFactory } from '../src/authenticators'
-import { prefix, TestController } from './jest.helpers'
+import { type AuthenticationMiddleware, ConfigError } from '@src'
+import { type AuthenticatorFactory, BasicAuthMiddlewareFactory, TokenAuthMiddlewareFactory } from '@src/authenticators'
+import { prefix, TestController, createTestServer, callAPI } from '@spec/helpers'
 
 type AuthenticatorTestConfig<T> = {
 	valid: T

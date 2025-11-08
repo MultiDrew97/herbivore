@@ -1,20 +1,21 @@
 {
-	"workspaces": [
-		"./core",
-		"./api",
-		"./log"
-	],
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"build": "npm run build --workspaces",
 		"clean": "npm run clean --workspaces",
 		"rebuild": "npm run rebuild --workspaces",
 		"publish": "npm run publish:prod --workspaces",
 		"publish:dry": "npm run publish:dry --workspaces",
-		"test": "npm run test --workspaces",
+		"test": "jest --config=./jest.config.ts",
 		"upgrade": "npm run upgrade:mono && npm run upgrade --workspaces",
 		"upgrade:mono": "npm update --save && npm update --save-dev"
 	},
+	"workspaces": [
+		"core",
+		"log",
+		"api"
+	],
 	"peerDependencies": {
 		"@types/jest": "^30.0.0",
 		"@types/lodash": "^4.17.20",

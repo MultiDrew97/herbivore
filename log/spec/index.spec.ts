@@ -1,4 +1,4 @@
-import Logger from '../src'
+import Logger from '@src'
 
 describe('Logger Tests', () => {
 	afterEach(() => {

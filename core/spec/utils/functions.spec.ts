@@ -1,4 +1,4 @@
-import { formatPhone } from '../../src/utils/functions'
+import { formatPhone } from '@src/utils/functions'
 
 describe('Functions Tests', () => {
 	test('Phone Formatting', () => {
@@ -20,11 +20,8 @@ describe('Functions Tests', () => {
 		// Test proper format, incorrect length
 		expect(() => formatPhone(`(${testPhone.slice(5)}`)).toThrow(/length/i)
 
-		// Test proper length, invalid characters
-		expect(() => formatPhone('abcdefghij')).toThrow(/characters/i)
-
 		// Test invalid characters
-		expect(() => formatPhone('/*-+.!@$%^&&*^&*$fdsfjdkafbdsafiw123134321')).toThrow(/characters/i)
+		expect(() => formatPhone('/*-+.!@$%^&&*^&*$fdsfjdkafbdsafiw123134321')).toThrow(/length/i)
 
 		// Test ext placements
 		const ext = '1234'

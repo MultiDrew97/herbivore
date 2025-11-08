@@ -1,0 +1,15 @@
+{
+	"extends": "./tsconfig.base.json",
+	"include": ["./jest*"],
+	"compilerOptions": {
+		"strict": false,
+		"types": ["jest", "node"],
+		"paths": {
+			"@base/*": ["./jest.*.ts"]
+		}
+	},
+	"ts-node": {
+		"esm": true,
+		"transpileOnly": true
+	}
+}

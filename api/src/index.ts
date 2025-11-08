@@ -1,10 +1,19 @@
 import { AuthenticationError, CustomError } from '@herbivore/core/utils/errors'
 import { OptionsJson, OptionsUrlencoded } from 'body-parser'
-import express, { Express, json, NextFunction, Request, Response, urlencoded } from 'express'
+import express, {
+	ErrorRequestHandler,
+	Express,
+	json,
+	NextFunction,
+	Request,
+	RequestHandler,
+	Response,
+	urlencoded,
+} from 'express'
 import helmet, { HelmetOptions } from 'helmet'
 import { constants } from 'http2'
 import { merge } from 'lodash'
-import { RegisterControllers } from './routes'
+import { RegisterControllers } from '@src/routes'
 
 export class ConfigError extends CustomError {}
 
@@ -12,14 +21,21 @@ export class ConfigError extends CustomError {}
 export type ControllerClass = InstanceType<any>
 
 /** The type of function that can be a route handler */
-export type ExpressRouteHandler = (req: Request, res: Response, next: NextFunction) => void | Promise<void>
+// export type ExpressRouteHandler = RequestHandler
 /** The type of function that can be an error handler */
-export type ErrorHandlerMiddleware = (err: any, req: Request, res: Response, next: NextFunction) => void | Promise<void>
+// export type ErrorHandlerMiddleware = (err: any, req: Request, res: Response, next: NextFunction) => void | Promise<void>
+// export type RouteParamHandler = (
+// 	req: Request,
+// 	res: Response,
+// 	next: NextFunction,
+// 	param: string,
+// 	paramName: string
+// ) => void | Promise<void>
 
 /** The type of function that can be an authentication handler */
-export type AuthenticationMiddleware = ExpressRouteHandler
+export type AuthenticationMiddleware = RequestHandler
 /** The type of function that can be a not found handler */
-export type NotFoundMiddleware = ExpressRouteHandler
+export type NotFoundMiddleware = RequestHandler
 
 /**
  * The config for creating a new API
@@ -34,10 +50,10 @@ export type HerbAPIConfig = Partial<{
 	helmetConfig: HelmetOptions
 	authenticator: AuthenticationMiddleware
 	notFoundHandler: NotFoundMiddleware
-	errorHandler: ErrorHandlerMiddleware
-	preRouteMiddleware: Array<ExpressRouteHandler>
+	errorHandler: ErrorRequestHandler
+	preRouteMiddleware: Array<RequestHandler>
 	paths: Array<ControllerClass>
-	postRouteMiddleware: Array<ExpressRouteHandler>
+	postRouteMiddleware: Array<RequestHandler>
 }>
 
 const DEFAULT_HELMET_CONFIG: HelmetOptions = Object.freeze({
