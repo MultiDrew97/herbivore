@@ -1,53 +1,45 @@
 {
 	"name": "@herbivore/api",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"author": "Herbivore",
 	"description": "Herbivore Project Package - API",
 	"license": "MIT",
-	"main": "./lib/index.js",
-	"types": "./lib/index.d.ts",
-	"type": "module",
 	"scripts": {
-		"build": "tsc",
-		"clean": "rm -rf lib",
+		"build": "tsc && tsc-alias",
+		"clean": "rm -rf lib tsconfig.tsbuildinfo",
 		"rebuild": "npm run clean && npm run build",
-		"test": "jest --config=./jest.config.ts",
+		"test": "vitest",
 		"prepublishOnly": "npm run rebuild",
-		"publish:prod": "echo NOT SETUP YET && exit 1",
+		"publish:prod": "npm publish --access public",
 		"publish:dry": "npm publish --access public --dry-run",
 		"upgrade": "npm update --save && npm update --save-dev"
 	},
 	"exports": {
-		"./routes": {
-			"types": "./lib/routes.d.ts",
-			"require": "./lib/routes.js",
-			"default": "./src/routes.ts"
+		".": {
+			"types": "./lib/index.d.ts",
+			"default": "./lib/index.js"
 		},
-		"./authenticators": {
-			"types": "./lib/authenticators.d.ts",
-			"require": "./lib/authenticators.js",
-			"default": "./src/authenticators.ts"
+		"./*": {
+			"types": "./lib/*.d.ts",
+			"default": "./lib/*.js"
 		},
 		"./package.json": "./package.json"
 	},
 	"peerDependencies": {
-		"express": "^5.1.0",
-		"tslib": "^2.8.1",
-		"helmet": "^8.1.0",
-		"lodash": "^4.17.21"
+		"express": "^5.1.0"
 	},
 	"dependencies": {
-		"@herbivore/core": "^4.0.2",
-		"reflect-metadata": "^0.2.2"
+		"@herbivore/core": "^4.1.2",
+		"reflect-metadata": "^0.2.2",
+		"helmet": "^8.1.0",
+		"tslib": "^2.8.1"
 	},
 	"devDependencies": {
-		"@types/jest": "^30.0.0",
-		"@types/lodash": "^4.17.20",
 		"@types/express": "^5.0.5",
-		"jest": "^30.2.0",
-		"ts-jest": "^29.4.5",
+		"@types/lodash": "^4.17.20",
+		"axios": "^1.13.2",
 		"typescript": "^5.9.3",
-		"axios": "^1.13.1"
+		"lodash": "^4.17.21"
 	},
 	"files": [
 		"./lib",

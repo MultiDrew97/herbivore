@@ -1,11 +1,9 @@
-export * as JestModifiers from './jest.matchers.ts' // Contains custom matchers and Jest customizations
-
 import axios, { AxiosError, type AxiosRequestConfig } from 'axios'
 import { merge } from 'lodash'
 
 export const DEFAULT_PORT: number = 3000
 export const DEFAULT_HOST: string = 'localhost'
-export const DEFAULT_BASE_URL: string = `http://${DEFAULT_HOST}:${DEFAULT_PORT}`
+export const DEFAULT_BASE_URL: string = `http://${DEFAULT_HOST}:${DEFAULT_PORT}/api`
 export const baseAxiosOptions: AxiosRequestConfig = {
 	baseURL: DEFAULT_BASE_URL,
 	headers: {
@@ -58,19 +56,27 @@ export function silenceLogs(...types: LogTypes[]) {
 	Resolve so that this ensures that each one only occurs once
 	*/
 	types.forEach((t) => {
-		jest.spyOn(console, t).mockImplementation(noop)
+		vitest.spyOn(console, t).mockImplementation(noop)
 	})
 }
 
-export function checkCirculars() {
-	const seen = new WeakSet()
-	return (key: string, value: any) => {
-		if (value && typeof value === 'object') {
-			if (seen.has(value)) {
-				return '[Circular]'
+type WaitOptions = {
+	timeout: number
+	interval: number
+}
+
+/** Custom wait for function for when the vitest global version isn't available. Usually from the global setup files */
+export async function waitFor(fn: () => Promise<void> | void, opts?: Partial<WaitOptions>) {
+	return await new Promise<void>((res) => {
+		const timer = setInterval(() => {
+			try {
+				fn()
+
+				clearInterval(timer)
+				res()
+			} catch (err: any) {
+				console.error(err.message)
 			}
-			seen.add(value)
-		}
-		return value
-	}
+		}, opts?.interval ?? 1000)
+	})
 }

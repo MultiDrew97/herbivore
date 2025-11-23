@@ -1,11 +1,10 @@
-import { type RouterOptions, type Response, type Request, type NextFunction } from 'express'
-import { Controller, Route } from '@src/routes'
-import { createServer } from 'http'
-import { constants } from 'http2'
-import { DEFAULT_PORT, DEFAULT_HOST } from '@base/helpers'
+import { DEFAULT_HOST, DEFAULT_PORT, waitFor } from '@base/helpers'
 import { type HerbAPIConfig, createHerbAPI } from '@src'
+import { Controller, Route } from '@src/routes'
+import { type NextFunction, type Request, type Response, type RouterOptions } from 'express'
+import { createServer, Server } from 'http'
+import { constants } from 'http2'
 
-export * from '@base/helpers'
 export const prefix: string = '/test'
 export const opts: RouterOptions = {}
 
@@ -69,13 +68,63 @@ export class TestController {
 	}
 }
 
-export function createTestServer(apiConfig: HerbAPIConfig, onListening?: () => void) {
-	return createServer(createHerbAPI(apiConfig))
+@Controller('/another', {
+	children: [{ path: '/child', controller: TestController }, TestController],
+})
+export class AnotherController {
+	@Route('get', '/')
+	getTest(req: Request, res: Response, next: NextFunction) {
+		res.sendStatus(constants.HTTP_STATUS_OK)
+	}
+}
+
+export async function createTestServer(
+	apiConfig: HerbAPIConfig,
+	port: number = DEFAULT_PORT,
+	host: string = DEFAULT_HOST,
+	onListening?: () => void
+) {
+	const server = createServer(createHerbAPI(apiConfig))
 		.on('close', () => {
 			console.info('Test server has been closed')
 		})
-		.listen(DEFAULT_PORT, DEFAULT_HOST, () => {
-			console.info(`Test server listening on port ${DEFAULT_PORT}`)
+		.listen(port, host, () => {
+			console.info(`Test server listening on port ${port}`)
 			onListening && onListening()
 		})
+
+	await waitFor(() => {
+		if (server.listening) return
+
+		throw new Error('Not listening yet')
+	})
+
+	// await vitest.waitFor(() => {
+	// 	if (!server || server.listening) return
+
+	// 	throw new Error('Server not ready')
+	// })
+
+	return server
 }
+
+export async function closeTestServer(server: Server) {
+	console.debug('Server Undefined?', !server)
+	if (!server) return
+
+	// function handleCloseError(err) {
+	// 	if (!err) return
+
+	// 	console.error(err.message)
+	// 	server.close(handleCloseError)
+	// }
+
+	server.close(/* handleCloseError */)
+	await waitFor(() => {
+		if (!server.listening) return
+
+		throw new Error('Server still running')
+	})
+}
+
+export * from '@base/helpers'

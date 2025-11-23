@@ -1,19 +1,11 @@
-import { AuthenticationError, CustomError } from '@herbivore/core/utils/errors'
+import { AuthenticationError, AuthorizationError, CustomError } from '@herbivore/core/utils/errors'
+import { RegisterControllers } from '@src/routes'
 import { OptionsJson, OptionsUrlencoded } from 'body-parser'
-import express, {
-	ErrorRequestHandler,
-	Express,
-	json,
-	NextFunction,
-	Request,
-	RequestHandler,
-	Response,
-	urlencoded,
-} from 'express'
+import express, { ErrorRequestHandler, Express, json, RequestHandler, urlencoded } from 'express'
 import helmet, { HelmetOptions } from 'helmet'
 import { constants } from 'http2'
 import { merge } from 'lodash'
-import { RegisterControllers } from '@src/routes'
+import { join } from 'path'
 
 export class ConfigError extends CustomError {}
 
@@ -38,39 +30,55 @@ export type AuthenticationMiddleware = RequestHandler
 export type NotFoundMiddleware = RequestHandler
 
 /**
- * The config for creating a new API
- *
- * All
+ * The config for creating a new API instance
  */
 export type HerbAPIConfig = Partial<{
+	/**
+	 * The base of the API. Default value is /api
+	 */
+	root: string
+	/** Whether to have JSON parsing in the API. Default value is true */
 	json: boolean
+	/** The config to use for the JSON parsing */
 	jsonConfig: OptionsJson
+	/** Whether to not output any logs from the framework. Default value is false */
+	silent: boolean
+	/** Whether to use URL Encoding for the API. Default value is true */
 	urlEncoding: boolean
+	/** The config to use for the URL Encoding */
 	urlEncodingConfig: OptionsUrlencoded
+	/** The config to use for the helmet security package */
 	helmetConfig: HelmetOptions
+	/** The type of authentication to use for the API. Default value is undefined to make API accessible without authentication */
 	authenticator: AuthenticationMiddleware
+	/** The handler for when an endpoint can't be found */
 	notFoundHandler: NotFoundMiddleware
+	/** The handler for when an error occurs within the API */
 	errorHandler: ErrorRequestHandler
+	/** Any handlers desired to be ran before any routes are hit */
 	preRouteMiddleware: Array<RequestHandler>
+	/** The endpoints to use with the API */
 	paths: Array<ControllerClass>
+	/** Any handlers desired to be ran after any routes are hit */
 	postRouteMiddleware: Array<RequestHandler>
 }>
 
-const DEFAULT_HELMET_CONFIG: HelmetOptions = Object.freeze({
+const DEFAULT_HELMET_CONFIG: HelmetOptions = Object.freeze<HelmetOptions>({
 	hidePoweredBy: true,
 })
-const DEFAULT_JSON_CONFIG: OptionsJson = Object.freeze({})
-const DEFAULT_URL_ENCONDING_CONFIG: OptionsUrlencoded = Object.freeze({
+const DEFAULT_JSON_CONFIG: OptionsJson = Object.freeze<OptionsJson>({})
+const DEFAULT_URL_ENCONDING_CONFIG: OptionsUrlencoded = Object.freeze<OptionsUrlencoded>({
 	extended: true,
 })
 const DEFAULT_API_CONFIG: HerbAPIConfig = Object.freeze({
+	root: '/api',
 	helmetConfig: DEFAULT_HELMET_CONFIG,
 	json: true,
 	jsonConfig: DEFAULT_JSON_CONFIG,
+	silent: false,
 	urlEncoding: true,
 	urlEncodingConfig: DEFAULT_URL_ENCONDING_CONFIG,
 	notFoundHandler: (_, res) => {
-		console.debug('Not Found Hit')
 		res.status(constants.HTTP_STATUS_NOT_FOUND).json({
 			message: 'Not sure where that is, brother ☹️',
 		})
@@ -81,6 +89,7 @@ const DEFAULT_API_CONFIG: HerbAPIConfig = Object.freeze({
 
 		switch (true) {
 			case err instanceof AuthenticationError:
+			case err instanceof AuthorizationError:
 				code = constants.HTTP_STATUS_UNAUTHORIZED
 				break
 		}
@@ -94,11 +103,13 @@ const DEFAULT_API_CONFIG: HerbAPIConfig = Object.freeze({
  *
  * The provided config will be deeply merged with the default config of the package
  *
+ *
+ *
  * @param cfg The config for the API
  * @returns The express app created from the provided config
  *
  * @see {@link HerbAPIConfig}
- *
+ *x
  * @throws ConfigError
  */
 export function createHerbAPI(cfg?: HerbAPIConfig): Express {
@@ -113,9 +124,7 @@ export function createHerbAPI(cfg?: HerbAPIConfig): Express {
 	- Use lodash?
 	- Use Pure ts?
 	*/
-	console.debug('Before Merge: ', config)
 	merge(config, cfg)
-	console.debug('After Merge: ', config)
 
 	api.use(helmet(config.helmetConfig))
 
@@ -127,7 +136,10 @@ export function createHerbAPI(cfg?: HerbAPIConfig): Express {
 
 	config.preRouteMiddleware?.forEach((pre) => api.use(pre))
 
-	config.paths && RegisterControllers(...config.paths).forEach(({ path: pfx, router: rtr }) => api.use(pfx, rtr))
+	config.paths &&
+		RegisterControllers(...config.paths).forEach(({ path: pfx, router: rtr }) =>
+			api.use(join(config.root!, pfx), rtr)
+		)
 
 	config.postRouteMiddleware?.forEach((post) => api.use(post))
 

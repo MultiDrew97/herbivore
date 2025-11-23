@@ -1,8 +1,8 @@
 {
 	"compileOnSave": true,
 	"compilerOptions": {
-		"module": "nodenext",
-		"moduleResolution": "nodenext",
+		"module": "node16",
+		"moduleResolution": "node16",
 		"composite": true,
 		"target": "es2024",
 		"allowJs": false,
@@ -21,6 +21,7 @@
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
 		"noErrorTruncation": true,
-		"rewriteRelativeImportExtensions": true
+		"rewriteRelativeImportExtensions": true,
+		"noEmit": false
 	}
 }

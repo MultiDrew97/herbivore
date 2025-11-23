@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash'
 import { Md5 } from 'ts-md5'
-import { ArgumentError } from './errors'
+import { ArgumentError } from '@utils/errors'
 
 /**
  * Encrypt a given string value using the provided salt value

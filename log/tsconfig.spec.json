@@ -1,15 +1,15 @@
 {
 	"extends": "../tsconfig.base.spec.json",
-	"include": ["spec"],
-	"files": ["./jest.config.ts", "./jest.setup.ts", "./jest.helpers.ts"],
+	"include": ["spec", "./vitest.*"],
+	// "files": ["../matchers.d.ts"],
 	"exclude": ["node_modules", "lib"],
 	"references": [{ "path": "../tsconfig.base.spec.json" }, { "path": "./tsconfig.json" }],
 	"compilerOptions": {
 		"outDir": "./lib/spec",
 		"rootDir": ".",
 		"paths": {
-			"@base/*": ["../jest.*.ts"],
-			"@spec/*": ["./jest.*.ts"],
+			"@base/*": ["../vitest.*.ts"],
+			"@spec/*": ["./vitest.*.ts"],
 			"@src": ["./src/index.ts"],
 			"@src/*": ["./src/*.ts"]
 		}

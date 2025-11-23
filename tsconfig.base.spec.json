@@ -1,15 +1,14 @@
 {
 	"extends": "./tsconfig.base.json",
-	"include": ["./jest*"],
+	"files": ["./matchers.d.ts"],
+	"include": ["./vitest.*"],
 	"compilerOptions": {
-		"strict": false,
-		"types": ["jest", "node"],
-		"paths": {
-			"@base/*": ["./jest.*.ts"]
-		}
+		"strict": true,
+		"types": ["node", "vitest/globals"],
+		"paths": {}
 	},
 	"ts-node": {
-		"esm": true,
-		"transpileOnly": true
+		"transpileOnly": true,
+		"emit": false
 	}
 }
