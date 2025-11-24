@@ -1,12 +1,16 @@
 {
-	"extends": "../tsconfig.json",
-	"include": ["src", "spec/authenticators.spec.ts"],
+	"extends": "../tsconfig.base.json",
+	"include": ["src"],
 	"exclude": ["node_modules", "lib", "spec"],
 	"compilerOptions": {
+		"composite": true,
 		"outDir": "./lib",
 		"rootDir": "./src",
+		"baseUrl": "./",
+		"tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo",
 		"paths": {
-
+			"@src": ["src/index.ts"],
+			"@src/*": ["src/*.ts"]
 		}
 	}
 }

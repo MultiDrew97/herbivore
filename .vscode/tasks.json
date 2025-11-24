@@ -1,0 +1,72 @@
+{
+	"version": "2.0.0",
+	"options": {
+		"cwd": "${workspaceFolder}",
+	},
+	"tasks": [
+		{
+			"label": "Test All Packages",
+			"detail": "Test all subpackages within the monorepo",
+			"type": "npm",
+			"script": "test",
+			"group": "test",
+			"problemMatcher": [],
+			"icon": {
+				"id": "beaker"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"showReuseMessage": false
+			}
+		},
+		{
+			"label": "Test Specific Package",
+			"detail": "Test a certain subpackage within the monorepo",
+			"type": "shell",
+			"command": "npm",
+			"icon": {
+				"id": "beaker"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"showReuseMessage": false
+			},
+			"args": ["test", "--", "--project", "${input:project}"],
+			"group": "test",
+			"problemMatcher": []
+		},
+		{
+			"type": "npm",
+			"script": "publish:dry",
+			"icon": {
+				"id": "broadcast"
+			},
+			"problemMatcher": [],
+			"label": "Publish All (Dry)",
+			"detail": "Run the dry run publish for all packages in the workspace"
+		},
+		{
+			"type": "npm",
+			"script": "publish",
+			"problemMatcher": [],
+			"label": "Publish All (Prod)",
+			"detail": "Run the publish for all packages in the workspace"
+		}
+	],
+	"inputs": [
+		{
+			"id": "project",
+			"type": "pickString",
+			"options": ["LOG", "CORE", "API"],
+			"description": "Which Project"
+		}
+	]
+}

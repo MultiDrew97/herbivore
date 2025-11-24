@@ -2,7 +2,7 @@ import { decode } from '@herbivore/core/utils'
 import { ArgumentError, AuthenticationError } from '@herbivore/core/utils/errors'
 import { IAuth } from '@herbivore/core/utils/interfaces'
 import { IncomingHttpHeaders } from 'http2'
-import { AuthenticationMiddleware, ConfigError } from './index'
+import { AuthenticationMiddleware, ConfigError } from '@src'
 
 type AuthType = 'basic' | 'token'
 export type AuthenticatorFactory<T> = (cfg: T) => AuthenticationMiddleware

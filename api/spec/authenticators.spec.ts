@@ -1,10 +1,10 @@
-import { AxiosRequestConfig } from 'axios'
-import { Server } from 'http'
-import { constants } from 'http2'
-import { callAPI, createTestServer } from '../../jest.helpers'
-import { AuthenticationMiddleware, ConfigError } from '../src'
-import { AuthenticatorFactory, BasicAuthMiddlewareFactory, TokenAuthMiddlewareFactory } from '../src/authenticators'
-import { prefix, TestController } from './jest.helpers'
+import { encode } from '@herbivore/core/utils'
+import { AuthenticationError } from '@herbivore/core/utils/errors'
+import { baseAxiosOptions } from '@spec/helpers'
+import { type AuthenticationMiddleware, ConfigError } from '@src'
+import { type AuthenticatorFactory, BasicAuthMiddlewareFactory, TokenAuthMiddlewareFactory } from '@src/authenticators'
+import { type AxiosRequestConfig } from 'axios'
+import { Request } from 'express'
 
 type AuthenticatorTestConfig<T> = {
 	valid: T
@@ -28,7 +28,7 @@ type AuthenticatorConfigTestConfig<T = any> = {
 	(BasicAuthTestConfig | TokenAuthTestConfig)
 
 function getOpts(type: string, auth: any) {
-	const opts: AxiosRequestConfig = {}
+	const opts: AxiosRequestConfig = { ...baseAxiosOptions }
 	switch (type) {
 		case 'basic':
 			opts.withCredentials = true
@@ -45,6 +45,26 @@ function getOpts(type: string, auth: any) {
 	}
 	return opts
 }
+
+function createRequest(type: string, auth: any) {
+	const req = {
+		headers: {},
+	} as Request
+
+	switch (type) {
+		case 'basic':
+			req.headers.authorization = `Basic ${encode(`${auth.username}:${auth.password}`)}`
+			break
+		case 'token':
+			req.headers.authorization = auth
+			break
+		default:
+			console.warn(`Authenticators - Valid: Unknown authentication type '${type}'`)
+	}
+	return req
+}
+
+const mockNext = vitest.fn((err) => err)
 
 describe.each<AuthenticationTestConfig>([
 	{
@@ -84,32 +104,21 @@ describe.each<AuthenticationTestConfig>([
 		invalid: ['test', 'invalid_token', '431'],
 	},
 ])('Proper Authentications', ({ type, authenticator, valid, invalid }) => {
-	let server: Server
-	beforeAll((done) => {
-		server = createTestServer(
-			{
-				authenticator,
-				paths: [TestController],
-			},
-			done
-		)
-	})
-
-	afterAll((done) => {
-		server.close(done)
+	afterEach(() => {
+		mockNext.mockClear()
 	})
 
 	test('Valid', async () => {
-		await expect(callAPI(prefix, getOpts(type, valid))).resolves.toMatchResponse({
-			status: constants.HTTP_STATUS_OK,
-		})
+		authenticator(createRequest(type, valid), null, mockNext)
+
+		expect(mockNext).toHaveBeenLastCalledWith()
 	})
 
 	test('Invalid', async () => {
 		for (let invld of invalid) {
-			await expect(callAPI(prefix, getOpts(type, invld))).rejects.toMatchResponse({
-				status: constants.HTTP_STATUS_UNAUTHORIZED,
-			})
+			authenticator(createRequest(type, invld), null, mockNext)
+
+			expect(mockNext).toHaveBeenLastCalledWith(expect.any(AuthenticationError))
 		}
 	})
 })

@@ -6,38 +6,38 @@ export class CustomError extends Error {
 }
 
 export class AuthorizationError extends CustomError {
-	constructor(message?: string, reason?: Error) {
-		super(message, reason)
+	constructor(message?: string) {
+		super(message)
 	}
 }
 
 export class DatabaseError extends CustomError {
-	constructor(message?: string, reason?: Error) {
-		super(message, reason)
+	constructor(message?: string) {
+		super(message)
 	}
 }
 
 export class ConnectionError extends DatabaseError {
-	constructor(message?: string, reason?: Error) {
-		super(message, reason)
+	constructor(message?: string) {
+		super(message)
 	}
 }
 
 export class ArgumentError extends CustomError {
-	constructor(message?: string, reason?: Error) {
-		super(message, reason)
+	constructor(message?: string) {
+		super(message)
 	}
 }
 
 export class AuthenticationError extends CustomError {
-	constructor(message?: string, reason?: Error) {
-		super(message, reason)
+	constructor(message?: string) {
+		super(message)
 	}
 }
 
 export class PropertyError extends CustomError {
-	constructor(message?: string, reason?: Error) {
-		super(message, reason)
+	constructor(message?: string) {
+		super(message)
 	}
 }
 

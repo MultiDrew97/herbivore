@@ -11,17 +11,29 @@ export enum TAGS {
 }
 
 function parseHeading(heading: string): string {
-	if (heading === undefined || heading === '' || heading === DEFAULT_HEADING) return DEFAULT_HEADING
+	if (!heading || heading === '' || heading === DEFAULT_HEADING) return DEFAULT_HEADING
 
 	heading = heading.replaceAll(/[^\da-zA-Z]/g, '').trim()
 
-	return heading && !/\[.+\]/i.test(heading) ? `[${heading}]` : DEFAULT_HEADING
+	return !/\[.+\]/i.test(heading) ? `[${heading}]` : DEFAULT_HEADING
 }
+/*
+MAYBE: Feature
+
+Add in formatting
+
+Also make it so a custom filter can be passed
+*/
 
 /**
  * Creates a logger object to handle logging to any console
  */
 export default class Logger {
+	/**
+	 *
+	 * @param heading The heading to use for the logger object
+	 * @param showDate Whether to include the date in the log
+	 */
 	constructor(
 		private readonly heading: string = DEFAULT_HEADING,
 		private readonly showDate: boolean = DEFAULT_SHOW_DATE

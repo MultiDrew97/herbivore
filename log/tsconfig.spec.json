@@ -1,9 +1,17 @@
 {
-	"extends": "../tsconfig.spec.json",
-	"include": ["spec"],
+	"extends": "../tsconfig.base.spec.json",
+	"include": ["spec", "./vitest.*"],
+	// "files": ["../matchers.d.ts"],
+	"exclude": ["node_modules", "lib"],
+	"references": [{ "path": "../tsconfig.base.spec.json" }, { "path": "./tsconfig.json" }],
 	"compilerOptions": {
 		"outDir": "./lib/spec",
 		"rootDir": ".",
-		"paths": {}
+		"paths": {
+			"@base/*": ["../vitest.*.ts"],
+			"@spec/*": ["./vitest.*.ts"],
+			"@src": ["./src/index.ts"],
+			"@src/*": ["./src/*.ts"]
+		}
 	}
 }

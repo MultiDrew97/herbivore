@@ -1,37 +1,39 @@
 {
 	"name": "@herbivore/log",
-	"version": "2.0.0",
+	"version": "2.1.0",
 	"description": "Herbivore Project Pacakge - Log",
 	"author": "Herbivore",
 	"license": "MIT",
 	"main": "./lib/index.js",
 	"types": "./lib/index.d.ts",
-	"files": [
-		"src",
-		"lib"
-	],
 	"scripts": {
 		"build": "tsc",
-		"clean": "rm -rf lib",
+		"clean": "rm -rf lib tsconfig.tsbuildinfo",
 		"rebuild": "npm run clean && npm run build",
-		"build:test": "tsc -p ./tsconfig.spec.json",
-		"test": "jest --config=./spec/jest.config.ts",
+		"test": "vitest",
 		"prepublishOnly": "npm run rebuild",
 		"publish:prod": "npm publish --access public",
 		"publish:dry": "npm publish --access public --dry-run",
 		"upgrade": "npm update --save && npm update --save-dev"
 	},
+	"exports": {
+		"./package": "./package.json",
+		".": {
+			"types": "./lib/index.d.ts",
+			"default": "./lib/index.js"
+		}
+	},
+	"files": [
+		"./src",
+		"./lib"
+	],
 	"dependencies": {
 		"tslib": "^2.8.1"
 	},
 	"devDependencies": {
 		"@skypack/package-check": "^0.2.2",
-		"@types/jest": "^30.0.0",
 		"@types/lodash": "^4.17.20",
-		"@types/node": "^18.19.130",
-		"jest": "^30.2.0",
 		"lodash": "^4.17.21",
-		"ts-jest": "^29.4.5",
 		"ts-node": "^10.9.2",
 		"typescript": "5.8.3"
 	},

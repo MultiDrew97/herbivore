@@ -1,0 +1,27 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"module": "node16",
+		"moduleResolution": "node16",
+		"composite": true,
+		"target": "es2024",
+		"allowJs": false,
+		"skipLibCheck": true,
+		"lib": ["ES2024", "DOM"],
+		"importHelpers": true,
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"declaration": true,
+		"downlevelIteration": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"noErrorTruncation": true,
+		"rewriteRelativeImportExtensions": true,
+		"noEmit": false
+	}
+}

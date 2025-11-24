@@ -1,8 +1,8 @@
 import { Server } from 'http'
 import { constants } from 'http2'
-import { callAPI, createTestServer } from '../../jest.helpers'
-import { PREFIX, ROUTE_OPTIONS, ROUTES } from '../src/routes'
-import { opts, prefix, TestController } from './jest.helpers'
+import { Controller, PREFIX, Route, ROUTE_OPTIONS, ROUTES } from '@src/routes'
+import { opts, prefix, TestController, callAPI, createTestServer, closeTestServer } from '@spec/helpers'
+import { NextFunction, Request, Response } from 'express'
 
 describe('Route Decorators', () => {
 	test('Controller', () => {
@@ -31,20 +31,6 @@ describe('Route Decorators', () => {
 })
 
 describe('Route Registrations', () => {
-	let server: Server
-	beforeAll((done) => {
-		server = createTestServer(
-			{
-				paths: [TestController],
-			},
-			done
-		)
-	})
-
-	afterAll((done) => {
-		server.close(done)
-	})
-
 	test('GET', async () => {
 		await expect(callAPI(prefix)).resolves.toMatchResponse({
 			status: constants.HTTP_STATUS_OK,

@@ -1,6 +1,6 @@
 import { isEmpty } from 'lodash'
 import { Md5 } from 'ts-md5'
-import { ArgumentError } from './errors'
+import { ArgumentError } from '@utils/errors'
 
 /**
  * Encrypt a given string value using the provided salt value
@@ -20,20 +20,28 @@ export function encrypt(value: string, salt?: string): string {
 export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 /**
- * Format a string of numbers to be in a phone format of (###) ###-#### x###...
+ * Format a string of numbers to be in a phone format of (###) ###-#### x###
  * @param phone The phone number to format
+ * @param ext The optional ext for the provided phone number
  * @returns
+ *
+ * @throws ArgumentError
  */
 export function formatPhone(phone: string, ext?: string): string {
-	phone = phone.trim()
+	phone = phone.trim().replaceAll(/\D/g, '')
 
 	if (isEmpty(phone)) return ''
 	if (phone.length < 10) throw new ArgumentError('Invalid length')
 
-	phone = phone.replaceAll(/[()\s+-]/gi, '')
 	console.debug(phone)
 
 	if (/[^\d+]/i.test(phone)) throw new ArgumentError('Invalid characters')
 
-	return `(${phone.slice(0, 3)}) ${phone.slice(3, 6)}-${phone.slice(6, 10)} ${ext ? `x${ext}` : ''}`.trim()
+	const matches = /(?<area>\d{3})(?<first>\d{3})(?<last>\d{4})/g.exec(phone)
+
+	if (!matches || !matches.groups) throw new ArgumentError('Invalid phone number provided')
+
+	return `(${matches.groups['area']}) ${matches.groups['first']}-${matches.groups['last']} ${
+		ext ? `x${ext}` : ''
+	}`.trim()
 }

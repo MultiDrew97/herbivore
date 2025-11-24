@@ -1,5 +1,5 @@
-import { createHerbAPI } from '../src'
-import { TestController } from './jest.helpers'
+import { createHerbAPI } from '@src'
+import { TestController } from '@spec/helpers'
 
 test('API Creation', () => {
 	function create() {

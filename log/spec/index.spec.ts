@@ -1,8 +1,8 @@
-import Logger from '../src'
+import Logger from '@src'
 
 describe('Logger Tests', () => {
 	afterEach(() => {
-		jest.restoreAllMocks()
+		vitest.clearAllMocks()
 	})
 
 	test('Logger Instantiation', () => {
@@ -50,7 +50,7 @@ describe('Logger Tests', () => {
 		for (let method of methods) {
 			let idx =
 				spies.push(
-					jest.spyOn(logs, method as keyof Logger).mockImplementation((message?: any, ...data: any[]) => {
+					vitest.spyOn(logs, method as keyof Logger).mockImplementation((message?: any, ...data: any[]) => {
 						console.info(`${method}: ${message}`, ...data)
 					})
 				) - 1
