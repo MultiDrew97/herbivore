@@ -16,12 +16,12 @@
 		"api"
 	],
 	"devDependencies": {
-		"@types/lodash": "^4.17.20",
+		"@types/lodash": "^4.17.21",
 		"@types/node": "^24.10.1",
 		"lodash": "^4.17.21",
 		"ts-node": "^10.9.2",
 		"tsc-alias": "^1.8.16",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.9"
+		"vitest": "^4.0.13"
 	}
 }

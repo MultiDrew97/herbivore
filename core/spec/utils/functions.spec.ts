@@ -1,4 +1,4 @@
-import { formatPhone } from '@src/utils/functions'
+import { formatPhone } from '@utils/functions'
 
 describe('Functions Tests', () => {
 	test('Phone Formatting', () => {

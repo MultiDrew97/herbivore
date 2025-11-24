@@ -1,4 +1,4 @@
-import { Time } from '@src/utils/conversions'
+import { Time } from '@utils/conversions'
 
 describe('Conversions', () => {
 	test('Time', () => {

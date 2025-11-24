@@ -1,6 +1,6 @@
 {
 	"name": "@herbivore/log",
-	"version": "2.1.0",
+	"version": "2.2.0",
 	"description": "Herbivore Project Pacakge - Log",
 	"author": "Herbivore",
 	"license": "MIT",
@@ -32,7 +32,7 @@
 	},
 	"devDependencies": {
 		"@skypack/package-check": "^0.2.2",
-		"@types/lodash": "^4.17.20",
+		"@types/lodash": "^4.17.21",
 		"lodash": "^4.17.21",
 		"ts-node": "^10.9.2",
 		"typescript": "5.8.3"

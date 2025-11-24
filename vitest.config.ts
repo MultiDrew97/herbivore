@@ -8,7 +8,6 @@ export default defineConfig({
 		silent: 'passed-only',
 		globals: true,
 		setupFiles: ['./vitest.setup.ts'],
-		watch: false,
 		environment: 'node',
 		fileParallelism: false,
 		projects: pkg.workspaces.map((w) => `./${w}/vitest.config.ts`),
