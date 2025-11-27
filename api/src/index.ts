@@ -42,7 +42,7 @@ export type HerbAPIConfig = Partial<{
 	/** The config to use for the JSON parsing */
 	jsonConfig: OptionsJson
 	/** Whether to not output any logs from the framework. Default value is false */
-	silent: boolean
+	verbose: boolean
 	/** Whether to use URL Encoding for the API. Default value is true */
 	urlEncoding: boolean
 	/** The config to use for the URL Encoding */

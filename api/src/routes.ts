@@ -20,7 +20,7 @@ Update this so that:
 	   	-
  */
 /** The available methods that can be used for registration */
-type Method = 'get' | 'post' | 'delete' | 'put' | 'options' | 'patch' | 'param' | 'all' | 'use'
+type Method = 'get' | 'post' | 'delete' | 'put' | 'options' | 'patch' | 'param' | 'all'
 
 /** The internal config for how the routes are defined */
 type RouteConfig = {
@@ -40,6 +40,7 @@ type ControllerChild = {
 	controller: ControllerClass
 }
 type ControllerOptions = RouterOptions & {
+	preRoute?: Array<RequestHandler>
 	/**
 	 * The children for the controller. This opens up setting up subpaths (i.e. /api/sub/path)
 	 *
@@ -113,28 +114,16 @@ export function Route<M extends Method>(method: M, path: string) {
 function getExpressRouter(controller: ControllerClass) {
 	const pfx: string = Reflect.getMetadata(PREFIX, controller)
 	const ctrl = new controller()
-	const { children: children, ...opts }: ControllerOptions = Reflect.getMetadata(ROUTE_OPTIONS, controller) ?? {}
+	const { children, preRoute: pre, ...opts }: ControllerOptions = Reflect.getMetadata(ROUTE_OPTIONS, controller) ?? {}
 	const rts: RouteConfig[] = Reflect.getMetadata(ROUTES, controller) ?? []
 	const rtr = express.Router(opts)
 
 	console.info(`Registering '${pfx}' with ${rts.length} endpoints...`)
 	console.debug(rts)
 
-	// Load any provided chilren routers first
-	console.debug('Number of Children: ', children?.length ?? 0)
-	children?.forEach((child: ControllerChild | ControllerClass) => {
-		const cls: boolean = 'path' in child
-		let info = getExpressRouter(cls ? child.controller : child)
-		/*
-		FIXME: Configuration
-
-			[x] Parse through children to add them in below pattern:
-
-		*/
-		console.debug(info)
-		console.debug(cls ? child.path : info.path)
-		rtr.use(cls ? child.path : info.path, info.router)
-	})
+	// Load any provided pre-route middleware
+	console.debug('Number of Pre-Route Middleware: ', pre?.length ?? 0)
+	pre?.forEach((p) => rtr.use(p))
 
 	/*
 	 Load the all methods for the route
@@ -152,6 +141,21 @@ function getExpressRouter(controller: ControllerClass) {
 		}
 	})
 
+	// Load any provided chilren routers first
+	console.debug('Number of Children: ', children?.length ?? 0)
+	children?.forEach((child: ControllerChild | ControllerClass) => {
+		const cls: boolean = 'path' in child
+		let info = getExpressRouter(cls ? child.controller : child)
+		/*
+			FIXME: Configuration
+
+				[x] Parse through children to add them in below pattern:
+
+			*/
+		console.debug(info)
+		console.debug(cls ? child.path : info.path)
+		rtr.use(cls ? child.path : info.path, info.router)
+	})
 	return { path: pfx, router: rtr }
 }
 

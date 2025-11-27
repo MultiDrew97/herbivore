@@ -80,7 +80,6 @@ export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> =
 			console.debug('Config Username: ', cfg.credentials.username)
 			console.debug('Provided Username: ', username)
 			console.debug('Correct? ', username == cfg.credentials.username)
-			console.debug('Correct? ', username === cfg.credentials.username)
 
 			if (username != cfg.credentials.username) throw new AuthenticationError('Invalid username provided')
 
