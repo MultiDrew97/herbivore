@@ -11,7 +11,7 @@
 		"clean": "rm -rf lib",
 		"rebuild": "npm run clean && npm run build",
 		"test": "vitest",
-		"prepublishOnly": "npm run rebuild",
+		"prepublishOnly": "npm test && npm run rebuild",
 		"publish:prod": "npm publish --access public",
 		"publish:dry": "npm publish --access public --dry-run",
 		"upgrade": "npm update --save && npm update --save-dev"

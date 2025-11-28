@@ -10,6 +10,7 @@ export default defineConfig({
 		setupFiles: ['./vitest.setup.ts'],
 		environment: 'node',
 		fileParallelism: false,
+		watch: false,
 		projects: pkg.workspaces.map((w) => `./${w}/vitest.config.ts`),
 	},
 	plugins: [

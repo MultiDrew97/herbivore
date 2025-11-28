@@ -1,7 +1,7 @@
 {
 	"version": "2.0.0",
 	"options": {
-		"cwd": "${workspaceFolder}",
+		"cwd": "${workspaceFolder}"
 	},
 	"tasks": [
 		{
@@ -44,21 +44,43 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "Publish All (Dry)",
+			"detail": "Run the dry run publish for all packages in the workspace",
 			"type": "npm",
 			"script": "publish:dry",
 			"icon": {
 				"id": "broadcast"
 			},
-			"problemMatcher": [],
-			"label": "Publish All (Dry)",
-			"detail": "Run the dry run publish for all packages in the workspace"
+			"problemMatcher": []
 		},
 		{
+			"label": "Publish All (Prod)",
+			"detail": "Run the publish for all packages in the workspace",
 			"type": "npm",
 			"script": "publish",
-			"problemMatcher": [],
-			"label": "Publish All (Prod)",
-			"detail": "Run the publish for all packages in the workspace"
+			"problemMatcher": []
+		},
+		{
+			"label": "Publish Specific Package (Dry)",
+			"detail": "Run the dry run publish for a specific packages in the workspace",
+			"type": "shell",
+			"command": "npm",
+			"args": ["run", "publish:dry", "--", "./${input:project}"],
+			"icon": {
+				"id": "broadcast"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Publish Specific Package (Prod)",
+			"detail": "Run the publish for a specific package in the workspace",
+			"type": "shell",
+			"command": "npm",
+			"args": ["run", "publish", "--", "${input:project}"],
+			"icon": {
+				"id": "broadcast"
+			},
+			"problemMatcher": []
 		}
 	],
 	"inputs": [
