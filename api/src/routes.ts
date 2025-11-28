@@ -15,7 +15,7 @@ Update this so that:
 	[ ] 'use' is swapped with pre
 	  	- Does 'all' get removed too?
 		- Leave 'all' as a valid option for the proper all handling?
-  	[ ] Implement so that the pre hooks are registered in before normal endpoint registration
+  	[x] Implement so that the pre hooks are registered in before normal endpoint registration
 	[ ] Test the pre hook is firing properly
 	   	-
  */
@@ -24,8 +24,11 @@ type Method = 'get' | 'post' | 'delete' | 'put' | 'options' | 'patch' | 'param' 
 
 /** The internal config for how the routes are defined */
 type RouteConfig = {
+	/** The method the route is handling */
 	method: Method
+	/** What path to handle on */
 	path: string
+	/** The name or symbol of the function that was marked to handle the route */
 	handler: string | symbol
 }
 /*
@@ -33,19 +36,17 @@ FIXME: Config
 
 Determine the best info to use for the configuration of the child routes when
 */
-type ControllerChild = {
+export type ControllerChild = {
 	/** The path for the child route */
 	path: string
 	/** The controller to use for the child route */
 	controller: ControllerClass
 }
-type ControllerOptions = RouterOptions & {
+export type ControllerOptions = RouterOptions & {
+	/** The handlers to run before your routes and children */
 	preRoute?: Array<RequestHandler>
 	/**
 	 * The children for the controller. This opens up setting up subpaths (i.e. /api/sub/path)
-	 *
-	 * @see
-	 * This is in a very experimental stage and should be used with caution as it may not work as intended
 	 */
 	children?: Array<ControllerChild> | ControllerClass
 }

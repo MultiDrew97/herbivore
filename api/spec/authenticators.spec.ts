@@ -4,7 +4,7 @@ import { baseAxiosOptions } from '@spec/helpers'
 import { type AuthenticationMiddleware, ConfigError } from '@src'
 import { type AuthenticatorFactory, BasicAuthMiddlewareFactory, TokenAuthMiddlewareFactory } from '@src/authenticators'
 import { type AxiosRequestConfig } from 'axios'
-import { Request } from 'express'
+import { Request, response, Response } from 'express'
 
 type AuthenticatorTestConfig<T> = {
 	valid: T
@@ -109,14 +109,14 @@ describe.each<AuthenticationTestConfig>([
 	})
 
 	test('Valid', async () => {
-		authenticator(createRequest(type, valid), null, mockNext)
+		authenticator(createRequest(type, valid), response, mockNext)
 
 		expect(mockNext).toHaveBeenLastCalledWith()
 	})
 
 	test('Invalid', async () => {
 		for (let invld of invalid) {
-			authenticator(createRequest(type, invld), null, mockNext)
+			authenticator(createRequest(type, invld), response, mockNext)
 
 			expect(mockNext).toHaveBeenLastCalledWith(expect.any(AuthenticationError))
 		}

@@ -1,8 +1,6 @@
-import { Server } from 'http'
+import { callAPI, opts, prefix, TestController } from '@spec/helpers'
+import { PREFIX, ROUTE_OPTIONS, ROUTES } from '@src/routes'
 import { constants } from 'http2'
-import { Controller, PREFIX, Route, ROUTE_OPTIONS, ROUTES } from '@src/routes'
-import { opts, prefix, TestController, callAPI, createTestServer, closeTestServer } from '@spec/helpers'
-import { NextFunction, Request, Response } from 'express'
 
 describe('Route Decorators', () => {
 	test('Controller', () => {
@@ -31,6 +29,29 @@ describe('Route Decorators', () => {
 })
 
 describe('Route Registrations', () => {
+	test('Pre Route Handlers', async () => {
+		await expect(callAPI(`${prefix}?test=pre`)).resolves.toMatchResponse({
+			status: constants.HTTP_STATUS_ACCEPTED,
+			data: {
+				message: 'Terminated early for test purposes',
+			},
+		})
+	})
+
+	test('Child Route Registration', async () => {
+		await expect(callAPI('/test/another/end')).resolves.toMatchResponse({
+			status: constants.HTTP_STATUS_OK,
+		})
+
+		await expect(callAPI('/test/child/end')).resolves.toMatchResponse({
+			status: constants.HTTP_STATUS_OK,
+		})
+
+		await expect(callAPI('/test/another/non')).rejects.toMatchResponse({
+			status: constants.HTTP_STATUS_NOT_FOUND,
+		})
+	})
+
 	test('GET', async () => {
 		await expect(callAPI(prefix)).resolves.toMatchResponse({
 			status: constants.HTTP_STATUS_OK,
@@ -78,6 +99,16 @@ describe('Route Registrations', () => {
 		let name: string = 'Put Name'
 		await expect(callAPI(prefix, { method: 'put', data: { name } })).resolves.toMatchResponse({
 			status: constants.HTTP_STATUS_OK,
+			data: {
+				message: expect.stringContaining(name),
+			},
+		})
+	})
+
+	test('PARAM', async () => {
+		let name: string = 'Param Name'
+		await expect(callAPI(`${prefix}/${name}?test=param`)).resolves.toMatchResponse({
+			status: constants.HTTP_STATUS_ACCEPTED,
 			data: {
 				message: expect.stringContaining(name),
 			},

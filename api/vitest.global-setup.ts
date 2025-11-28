@@ -3,7 +3,7 @@ import { TestProject } from 'vitest/node'
 
 export default async function setup(_: TestProject) {
 	console.info('Performing global setup...')
-	const server = await createTestServer({ paths: [TestController, AnotherController] })
+	const server = await createTestServer({ paths: [TestController] })
 
 	return async () => {
 		console.info('Performing global teardown...')

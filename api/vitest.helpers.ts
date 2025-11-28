@@ -1,16 +1,54 @@
 import { DEFAULT_HOST, DEFAULT_PORT, waitFor } from '@base/helpers'
 import { type HerbAPIConfig, createHerbAPI } from '@src'
-import { Controller, Route } from '@src/routes'
+import { Controller, ControllerOptions, Route } from '@src/routes'
 import { type NextFunction, type Request, type Response, type RouterOptions } from 'express'
 import { createServer, Server } from 'http'
 import { constants } from 'http2'
 
 export const prefix: string = '/test'
-export const opts: RouterOptions = {}
+function preRouteRunner(req: Request, res: Response, next: NextFunction) {
+	console.warn('Provided Query Values: ', req.query.test)
+	if (req.query.test == 'pre') {
+		console.warn('Test terminating early')
+		res.status(constants.HTTP_STATUS_ACCEPTED).json({
+			message: 'Terminated early for test purposes',
+		})
+		// next(new Error('Pre routed instructed to term early'))
+		return
+	}
+	next()
+}
+
+@Controller('/another')
+export class AnotherController {
+	@Route('get', '/end')
+	getTest(req: Request, res: Response, next: NextFunction) {
+		res.sendStatus(constants.HTTP_STATUS_OK)
+	}
+}
+export const opts: ControllerOptions = {
+	preRoute: [preRouteRunner],
+	children: [{ path: '/child', controller: AnotherController }, AnotherController],
+}
 
 @Controller(prefix, opts)
 export class TestController {
 	name: string = 'Test'
+
+	@Route('param', 'name')
+	parseNameParam(req: Request, res: Response, next: NextFunction, name: string, _: string) {
+		console.debug('Parsing name param: ', req.params.name)
+		if (req.query.test == 'param') {
+			console.warn('Test terminating early in param handler')
+			res.status(constants.HTTP_STATUS_ACCEPTED).json({
+				message: `Terminating early for ${name}`,
+			})
+			return
+		}
+
+		next()
+	}
+
 	@Route('get', '/')
 	getClassName(_: Request, res: Response, next: NextFunction) {
 		console.log('Get Name: ', this.name)
@@ -59,22 +97,6 @@ export class TestController {
 		res.json({
 			message: `Name ${req.body.name} has been put somewhere`,
 		})
-	}
-
-	@Route('param', 'name')
-	temp(req: Request, res: Response, next: NextFunction, name: string, key: string) {
-		console.warn('Param Name: ', name)
-		next()
-	}
-}
-
-@Controller('/another', {
-	children: [{ path: '/child', controller: TestController }, TestController],
-})
-export class AnotherController {
-	@Route('get', '/')
-	getTest(req: Request, res: Response, next: NextFunction) {
-		res.sendStatus(constants.HTTP_STATUS_OK)
 	}
 }
 
