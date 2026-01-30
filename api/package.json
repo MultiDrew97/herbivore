@@ -38,7 +38,7 @@
 		"@types/express": "^5.0.5",
 		"@types/lodash": "^4.17.21",
 		"axios": "^1.13.2",
-		"lodash": "^4.17.21",
+		"lodash": "^4.17.23",
 		"typescript": "^5.9.3"
 	},
 	"files": [
