@@ -5,20 +5,28 @@ import { IncomingHttpHeaders } from 'http2'
 import { AuthenticationMiddleware, ConfigError } from '@src'
 
 type AuthType = 'basic' | 'token'
+type Auth = IAuth | string
 export type AuthenticatorFactory<T> = (cfg: T) => AuthenticationMiddleware
-function getAuthHeader(type: AuthType, headers: IncomingHttpHeaders) {
+function getAuth(type: AuthType, headers: IncomingHttpHeaders): Auth {
 	if (!headers.authorization) throw new AuthenticationError('No auth provided')
 
 	switch (type) {
 		case 'basic':
-			break
+			console.debug('Provided Header: ', headers.authorization)
+			if (!/Basic\s.+/.test(headers.authorization))
+				throw new AuthenticationError(`Improper authentication provided`)
+
+			const [username, password] = decode(headers.authorization.split(/\s/)[1]).split(':')
+
+			return { username, password }
 		case 'token':
-			break
+			if (!/Bearer\s.+/.test(headers.authorization))
+				throw new AuthenticationError(`Improper authentication provided`)
+
+			return headers.authorization.split(/\s/)[1]
 		default:
 			throw new ArgumentError(`Unknown auth type '${type}'`)
 	}
-
-	return headers.authorization
 }
 
 /**
@@ -39,7 +47,7 @@ export type BasicAuthConfig = {
  * @throws ConfigError
  */
 export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> = (
-	cfg: BasicAuthConfig
+	cfg: BasicAuthConfig,
 ): AuthenticationMiddleware => {
 	console.info('Validating basic config...')
 	console.debug('Provided Config: ', cfg)
@@ -51,15 +59,8 @@ export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> =
 	}
 	console.info('Valid basic config')
 
-	function getAuth(authHeader: string): IAuth {
-		console.debug('Provided Header: ', authHeader)
-		const [username, password] = decode(authHeader.split(/\s/)[1]).split(':')
-
-		return { username, password }
-	}
-
 	function validatePassword(password: string) {
-		if (!cfg.encrypt && cfg.encrypted)
+		if (cfg.encrypted && !cfg.encrypt)
 			throw new ConfigError('Must provide an encryption function when using encrypt')
 
 		return cfg.encrypted && cfg.encrypt
@@ -71,11 +72,9 @@ export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> =
 		try {
 			console.info('Validating request with credential based authentication...')
 			console.debug('Provided config: ', cfg)
-			const auth = getAuthHeader('basic', req.headers)
+			const { username, password } = getAuth('basic', req.headers) as IAuth
 
-			if (!/Basic.+/.test(auth)) throw new AuthenticationError(`Improper authentication provided`)
-
-			const { username, password } = getAuth(auth)
+			// const { username, password } = getAuth(auth)
 
 			console.debug('Config Username: ', cfg.credentials.username)
 			console.debug('Provided Username: ', username)
@@ -119,7 +118,7 @@ export function TokenAuthMiddlewareFactory(cfg: TokenAuthConfig): Authentication
 		try {
 			console.info('Validating request with token based authentication...')
 
-			const token = getAuthHeader('token', req.headers)
+			const token = getAuth('token', req.headers) as string
 
 			if (!cfg.validate(token)) throw new AuthenticationError('Invalid token provided')
 
