@@ -7,8 +7,8 @@
 		"publish": "npm run publish:prod --workspaces",
 		"publish:dry": "npm run publish:dry --workspaces",
 		"test": "vitest",
-		"upgrade": "npm run upgrade:mono && npm run upgrade --workspaces",
-		"upgrade:mono": "npm update --save && npm update --save-dev"
+		"update": "npm run update:mono && npm run update --workspaces",
+		"update:mono": "npm update --save && npm update --save-dev"
 	},
 	"workspaces": [
 		"core",
@@ -18,11 +18,11 @@
 	],
 	"devDependencies": {
 		"@types/lodash": "^4.17.21",
-		"@types/node": "^24.10.1",
+		"@types/node": "^24.12.0",
 		"lodash": "^4.17.23",
 		"ts-node": "^10.9.2",
 		"tsc-alias": "^1.8.16",
 		"vite-tsconfig-paths": "^5.1.4",
-		"vitest": "^4.0.14"
+		"vitest": "^4.1.0"
 	}
 }

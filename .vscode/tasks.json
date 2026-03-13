@@ -65,7 +65,7 @@
 			"detail": "Run the dry run publish for a specific packages in the workspace",
 			"type": "shell",
 			"command": "npm",
-			"args": ["run", "publish:dry", "--", "./${input:project}"],
+			"args": ["run", "publish:dry", "--", "-w", "${input:project}"],
 			"icon": {
 				"id": "broadcast"
 			},
@@ -76,7 +76,7 @@
 			"detail": "Run the publish for a specific package in the workspace",
 			"type": "shell",
 			"command": "npm",
-			"args": ["run", "publish", "--", "${input:project}"],
+			"args": ["publish", "--", "-w", "${input:project}"],
 			"icon": {
 				"id": "broadcast"
 			},
@@ -87,8 +87,8 @@
 		{
 			"id": "project",
 			"type": "pickString",
-			"options": ["LOG", "CORE", "API", "MOBILE"],
-			"description": "Which Project"
+			"options": ["log", "core", "api", "mobile"],
+			"description": "Which Project?"
 		}
 	]
 }
