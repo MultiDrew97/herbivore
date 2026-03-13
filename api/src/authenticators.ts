@@ -1,9 +1,9 @@
 import { decode } from '@herbivore/core/utils'
 import { ArgumentError, AuthenticationError } from '@herbivore/core/utils/errors'
 import { IAuth } from '@herbivore/core/utils/interfaces'
-import { IncomingHttpHeaders } from 'http2'
-import { Request, RequestHandler } from 'express'
 import { AuthenticationMiddleware, ConfigError } from '@src'
+import { RequestHandler } from 'express'
+import { IncomingHttpHeaders } from 'http2'
 
 type AuthType = 'basic' | 'token'
 type Auth = IAuth | string
