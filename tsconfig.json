@@ -7,6 +7,8 @@
 		{ "path": "./api" },
 		{ "path": "./api/tsconfig.spec.json" },
 		{ "path": "./log" },
-		{ "path": "./log/tsconfig.spec.json" }
+		{ "path": "./log/tsconfig.spec.json" },
+		{ "path": "./mobile" },
+		{ "path": "./mobile/tsconfig.spec.json" }
 	]
 }

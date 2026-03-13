@@ -1,0 +1,21 @@
+{
+	"extends": "expo/tsconfig.base",
+	"include": ["src"],
+	"exclude": ["node_modules", "lib", "spec"],
+	"compilerOptions": {
+		"jsx": "react-native",
+		"moduleResolution": "bundler",
+		"customConditions": ["react-native"],
+		"lib": ["DOM", "ESNext"],
+		"target": "esnext",
+		"noEmit": false,
+		"composite": true,
+		"outDir": "./lib",
+		"rootDir": "./src",
+		"baseUrl": "./",
+		"paths": {
+			"@src": ["src/index.ts"],
+			"@src/*": ["src/*.ts"]
+		}
+	}
+}

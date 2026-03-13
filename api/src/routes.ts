@@ -1,7 +1,7 @@
 import 'reflect-metadata'
 
-import { ControllerClass } from '@src'
-import express, { RequestHandler, RequestParamHandler, RouterOptions } from 'express'
+import { type ControllerClass } from '@src'
+import { type RequestHandler, type RequestParamHandler, Router, type RouterOptions } from 'express'
 
 export const PREFIX = Symbol('prefix')
 export const ROUTES = Symbol('routes')
@@ -82,7 +82,7 @@ export function Route<M extends Method>(method: M, path: string) {
 	return <T extends RouteHandler<M>>(
 		target: ControllerClass,
 		handler: symbol | string,
-		_desc: TypedPropertyDescriptor<T>
+		_desc: TypedPropertyDescriptor<T>,
 	) => {
 		const ctor = target.constructor
 		/*
@@ -105,19 +105,22 @@ export function Route<M extends Method>(method: M, path: string) {
 	}
 }
 
+type RouteDefinition = { path: string; router: Router }
 /**
  * Convert a provided controller class constructor into an ExpressJS router object
  *
  *
  * @param controller The controller to convert to a router
  * @returns An object that holds the path for the router and the router object that pertains to this
+ *
+ * @see {@link ControllerClass}
  */
-function getExpressRouter(controller: ControllerClass) {
+function getExpressRouter(controller: ControllerClass): RouteDefinition {
 	const pfx: string = Reflect.getMetadata(PREFIX, controller)
 	const ctrl = new controller()
 	const { children, preRoute: pre, ...opts }: ControllerOptions = Reflect.getMetadata(ROUTE_OPTIONS, controller) ?? {}
 	const rts: RouteConfig[] = Reflect.getMetadata(ROUTES, controller) ?? []
-	const rtr = express.Router(opts)
+	const rtr = Router(opts)
 
 	console.info(`Registering '${pfx}' with ${rts.length} endpoints...`)
 	console.debug(rts)

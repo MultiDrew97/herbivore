@@ -9,8 +9,8 @@
 		"paths": {
 			"@base/*": ["../vitest.*.ts"],
 			"@spec/*": ["./vitest.*.ts"],
-			"@src": ["./src/index.ts"],
-			"@src/*": ["./src/*.ts"]
+			"@src": ["./src/index.tsx"],
+			"@src/*": ["./src/*.tsx"]
 		}
 	}
 }

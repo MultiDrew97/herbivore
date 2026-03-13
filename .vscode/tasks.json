@@ -87,7 +87,7 @@
 		{
 			"id": "project",
 			"type": "pickString",
-			"options": ["LOG", "CORE", "API"],
+			"options": ["LOG", "CORE", "API", "MOBILE"],
 			"description": "Which Project"
 		}
 	]

@@ -2,6 +2,7 @@ import { decode } from '@herbivore/core/utils'
 import { ArgumentError, AuthenticationError } from '@herbivore/core/utils/errors'
 import { IAuth } from '@herbivore/core/utils/interfaces'
 import { IncomingHttpHeaders } from 'http2'
+import { Request, RequestHandler } from 'express'
 import { AuthenticationMiddleware, ConfigError } from '@src'
 
 type AuthType = 'basic' | 'token'
@@ -29,16 +30,25 @@ function getAuth(type: AuthType, headers: IncomingHttpHeaders): Auth {
 	}
 }
 
+type UnencryptedBasicAuthConfig = {
+	encrypted: false
+}
+
+type EncryptedBasicAuthConfig = {
+	encrypted: true
+	encrypt: (value: string, salt?: string) => string
+}
+
 /**
  * The config for creating a credential based authenticator middleware
  */
-export type BasicAuthConfig = {
-	encrypted: boolean
+export type BasicAuthConfig = (UnencryptedBasicAuthConfig | EncryptedBasicAuthConfig) & {
 	credentials: IAuth
-	encrypt?: (value: string, salt?: string) => string
 }
 /**
- * A factory for creating a new credentials based authenticor middleware. If a failed authentication attempt occurs, it will call the provided error handler and respond accordingly
+ * A factory for creating a new credentials based authenticor middleware.
+ *
+ * If a failed authentication attempt occurs, it will call the provided error handler and respond accordingly
  * @param cfg The config for the authenticator
  * @returns The authentication middleware that handles credential authentication
  *
@@ -50,9 +60,6 @@ export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> =
 	cfg: BasicAuthConfig,
 ): AuthenticationMiddleware => {
 	console.info('Validating basic config...')
-	console.debug('Provided Config: ', cfg)
-	console.debug('Encrypted? ', cfg.encrypted)
-	console.debug('Encrypt Missing? ', !cfg.encrypt)
 	console.debug('Invalid? ', cfg.encrypted && !cfg.encrypt)
 	if (cfg.encrypted && !cfg.encrypt) {
 		throw new ConfigError('BasicAuthMiddleware - Must provide encrypt function if credentials are encrypted')
@@ -63,7 +70,7 @@ export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> =
 		if (cfg.encrypted && !cfg.encrypt)
 			throw new ConfigError('Must provide an encryption function when using encrypt')
 
-		return cfg.encrypted && cfg.encrypt
+		return cfg.encrypted
 			? cfg.encrypt(password, cfg.credentials.salt) == cfg.credentials.password
 			: password == cfg.credentials.password
 	}
@@ -74,10 +81,8 @@ export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> =
 			console.debug('Provided config: ', cfg)
 			const { username, password } = getAuth('basic', req.headers) as IAuth
 
-			// const { username, password } = getAuth(auth)
-
-			console.debug('Config Username: ', cfg.credentials.username)
 			console.debug('Provided Username: ', username)
+			console.debug('Config Username: ', cfg.credentials.username)
 			console.debug('Correct? ', username == cfg.credentials.username)
 
 			if (username != cfg.credentials.username) throw new AuthenticationError('Invalid username provided')
@@ -96,6 +101,8 @@ export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> =
  * The config for creating a token based authenticator middleware
  */
 export type TokenAuthConfig = {
+	genPath: string
+	genToken: RequestHandler
 	validate: (token: string) => boolean
 }
 /**
@@ -114,8 +121,14 @@ export function TokenAuthMiddlewareFactory(cfg: TokenAuthConfig): Authentication
 	// Run config validation for this authenticator
 	console.info('Valid token config')
 
-	return (req, _, next) => {
+	return (req, res, next) => {
 		try {
+			if (req.path == cfg.genPath) {
+				console.debug('Token generation path reached')
+				cfg.genToken(req, res, next)
+				return
+			}
+
 			console.info('Validating request with token based authentication...')
 
 			const token = getAuth('token', req.headers) as string

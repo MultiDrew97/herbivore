@@ -70,12 +70,12 @@ const DEFAULT_JSON_CONFIG: OptionsJson = Object.freeze<OptionsJson>({})
 const DEFAULT_URL_ENCONDING_CONFIG: OptionsUrlencoded = Object.freeze<OptionsUrlencoded>({
 	extended: true,
 })
-const DEFAULT_API_CONFIG: HerbAPIConfig = Object.freeze({
+const DEFAULT_API_CONFIG: HerbAPIConfig = Object.freeze<HerbAPIConfig>({
 	root: '/api',
 	helmetConfig: DEFAULT_HELMET_CONFIG,
 	json: true,
 	jsonConfig: DEFAULT_JSON_CONFIG,
-	silent: false,
+	verbose: false,
 	urlEncoding: true,
 	urlEncodingConfig: DEFAULT_URL_ENCONDING_CONFIG,
 	notFoundHandler: (_, res) => {
@@ -138,7 +138,7 @@ export function createHerbAPI(cfg?: HerbAPIConfig): Express {
 
 	config.paths &&
 		RegisterControllers(...config.paths).forEach(({ path: pfx, router: rtr }) =>
-			api.use(join(config.root!, pfx), rtr)
+			api.use(join(config.root!, pfx), rtr),
 		)
 
 	config.postRouteMiddleware?.forEach((post) => api.use(post))
