@@ -38,9 +38,11 @@
 	],
 	"keywords": [
 		"herbivore",
+		"mobile",
 		"expo",
-		"ts",
-		"mobile"
+		"react-native",
+		"rn",
+		"ts"
 	],
 	"homepage": "https://github.com/MultiDrew97/herbivore#readme",
 	"bugs": {
