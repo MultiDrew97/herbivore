@@ -76,7 +76,7 @@
 			"detail": "Run the publish for a specific package in the workspace",
 			"type": "shell",
 			"command": "npm",
-			"args": ["publish", "--", "-w", "${input:project}"],
+			"args": ["run", "publish", "--", "-w", "${input:project}"],
 			"icon": {
 				"id": "broadcast"
 			},

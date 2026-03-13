@@ -2,8 +2,9 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineProject } from 'vitest/config'
 
 export default defineProject({
+	// resolve: { tsconfigPaths: true },
 	test: {
-		name: { label: 'MOBILE', color: 'cyan' },
+		name: { label: 'API', color: 'yellow' },
 		globals: true,
 		environment: 'node',
 		setupFiles: ['./vitest.setup.ts'],

@@ -3,6 +3,7 @@ import { defineConfig } from 'vitest/config'
 import pkg from './package.json'
 
 export default defineConfig({
+	// resolve: { tsconfigPaths: true },
 	test: {
 		name: 'HERBIVORE',
 		silent: 'passed-only',
@@ -11,11 +12,11 @@ export default defineConfig({
 		environment: 'node',
 		fileParallelism: false,
 		watch: false,
-		projects: pkg.workspaces.map((w) => `./${w}/vitest.config.ts`),
+		projects: pkg.workspaces.map((w) => `./${w}/vitest.config.mts`),
 	},
-	plugins: [
-		tsconfigPaths({
-			configNames: ['tsconfig.base.spec.json'],
-		} as PluginOptions),
-	],
+	// plugins: [
+	// 	tsconfigPaths({
+	// 		configNames: ['tsconfig.base.spec.json'],
+	// 	} as PluginOptions),
+	// ],
 })

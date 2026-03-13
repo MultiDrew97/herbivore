@@ -2,9 +2,13 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineProject } from 'vitest/config'
 
 export default defineProject({
+	// resolve: { tsconfigPaths: true },
 	test: {
-		name: { label: 'LOG', color: 'green' },
+		name: { label: 'MOBILE', color: 'cyan' },
 		globals: true,
+		environment: 'node',
+		setupFiles: ['./vitest.setup.ts'],
+		globalSetup: ['./vitest.global-setup.ts'],
 	},
 	plugins: [
 		tsconfigPaths({
@@ -12,5 +16,3 @@ export default defineProject({
 		}),
 	],
 })
-
-// export default config
