@@ -118,14 +118,14 @@ describe.each<AuthenticationTestConfig>([
 
 	test('Valid', async () => {
 		authenticator(createRequest(type, valid), response, mockNext)
-		expect(mockNext).lastCalledWith()
+		expect(mockNext).toHaveBeenCalledWith()
 	})
 
 	test('Invalid', async () => {
 		for (let invld of invalid) {
 			authenticator(createRequest(type, invld), response, mockNext)
 
-			expect(mockNext).lastCalledWith(expect.any(AuthenticationError))
+			expect(mockNext).toHaveBeenCalledWith(expect.any(AuthenticationError))
 		}
 	})
 })
@@ -202,8 +202,8 @@ describe('Token Generation', () => {
 	test('Valid', () => {
 		auth(createRequest('token', validToken, tokenGenPath), res, mockNext)
 
-		expect(jsonSpy).toBeCalledWith({ token })
-		expect(mockNext).not.toBeCalled()
+		expect(jsonSpy).toHaveBeenCalledWith({ token })
+		expect(mockNext).not.toHaveBeenCalled()
 	})
 
 	test('Invalid', () => {
@@ -216,7 +216,7 @@ describe('Token Generation', () => {
 		const typ = mockNext.mock.lastCall!
 		expect(typ[0]).toBeInstanceOf(AuthenticationError)
 		expect(typ[0].message).toStrictEqual(expect.stringContaining('protocol'))
-		expect(jsonSpy).not.toBeCalled()
+		expect(jsonSpy).not.toHaveBeenCalled()
 
 		// No auth present
 		auth(
@@ -230,7 +230,7 @@ describe('Token Generation', () => {
 		const none = mockNext.mock.lastCall!
 		expect(none[0]).toBeInstanceOf(AuthenticationError)
 		expect(none[0].message).toStrictEqual(expect.stringContaining('auth'))
-		expect(jsonSpy).not.toBeCalled()
+		expect(jsonSpy).not.toHaveBeenCalled()
 
 		// Incorrect token
 		const invalidToken = 'invalid_token'
@@ -238,6 +238,6 @@ describe('Token Generation', () => {
 		const invld = mockNext.mock.lastCall!
 		expect(invld[0]).toBeInstanceOf(AuthorizationError)
 		expect(invld[0].message).toStrictEqual(expect.stringContaining('token'))
-		expect(jsonSpy).not.toBeCalled()
+		expect(jsonSpy).not.toHaveBeenCalled()
 	})
 })
