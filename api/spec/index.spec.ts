@@ -3,7 +3,7 @@ import { TestController } from '@spec/helpers'
 
 test('API Creation', () => {
 	function create() {
-		createHerbAPI({ paths: [TestController] })
+		createHerbAPI({ routes: [TestController] })
 	}
 
 	expect(create).not.toThrow()

@@ -32,36 +32,49 @@ export type NotFoundMiddleware = RequestHandler
 /**
  * The config for creating a new API instance
  */
-export type HerbAPIConfig = Partial<{
+export type HerbAPIConfig = {
 	/**
-	 * The base of the API. Default value is /api
+	 * The base of the API.
+	 *
+	 * @default /api
 	 */
 	root: string
-	/** Whether to have JSON parsing in the API. Default value is true */
+	/**
+	 * Whether to have JSON parsing in the API.
+	 * @default true
+	 */
 	json: boolean
 	/** The config to use for the JSON parsing */
 	jsonConfig: OptionsJson
-	/** Whether to not output any logs from the framework. Default value is false */
+	/**
+	 * Whether to not output any logs from the framework.
+	 *
+	 * @default false
+	 */
 	verbose: boolean
-	/** Whether to use URL Encoding for the API. Default value is true */
+	/**
+	 * Whether to use URL Encoding for the API.
+	 *
+	 * @default true
+	 */
 	urlEncoding: boolean
 	/** The config to use for the URL Encoding */
-	urlEncodingConfig: OptionsUrlencoded
+	urlEncodingConfig?: Partial<OptionsUrlencoded>
 	/** The config to use for the helmet security package */
-	helmetConfig: HelmetOptions
+	helmetConfig?: Partial<HelmetOptions>
 	/** The type of authentication to use for the API. Default value is undefined to make API accessible without authentication */
-	authenticator: AuthenticationMiddleware
+	authenticator?: AuthenticationMiddleware
 	/** The handler for when an endpoint can't be found */
 	notFoundHandler: NotFoundMiddleware
 	/** The handler for when an error occurs within the API */
 	errorHandler: ErrorRequestHandler
-	/** Any handlers desired to be ran before any routes are hit */
-	preRouteMiddleware: Array<RequestHandler>
 	/** The endpoints to use with the API */
-	paths: Array<ControllerClass>
+	routes?: Array<ControllerClass>
+	/** Any handlers desired to be ran before any routes are hit */
+	preRouteMiddleware?: Array<RequestHandler>
 	/** Any handlers desired to be ran after any routes are hit */
-	postRouteMiddleware: Array<RequestHandler>
-}>
+	postRouteMiddleware?: Array<RequestHandler>
+}
 
 const DEFAULT_HELMET_CONFIG: HelmetOptions = Object.freeze<HelmetOptions>({
 	hidePoweredBy: true,
@@ -112,7 +125,7 @@ const DEFAULT_API_CONFIG: HerbAPIConfig = Object.freeze<HerbAPIConfig>({
  *x
  * @throws ConfigError
  */
-export function createHerbAPI(cfg?: HerbAPIConfig): Express {
+export function createHerbAPI(cfg: Partial<HerbAPIConfig>): Express {
 	const api: Express = express()
 	const config: HerbAPIConfig = { ...DEFAULT_API_CONFIG }
 
@@ -136,8 +149,8 @@ export function createHerbAPI(cfg?: HerbAPIConfig): Express {
 
 	config.preRouteMiddleware?.forEach((pre) => api.use(pre))
 
-	config.paths &&
-		RegisterControllers(...config.paths).forEach(({ path: pfx, router: rtr }) =>
+	config.routes &&
+		RegisterControllers(...config.routes).forEach(({ path: pfx, router: rtr }) =>
 			api.use(join(config.root!, pfx), rtr),
 		)
 

@@ -101,8 +101,8 @@ export const BasicAuthMiddlewareFactory: AuthenticatorFactory<BasicAuthConfig> =
  * The config for creating a token based authenticator middleware
  */
 export type TokenAuthConfig = {
-	genPath: string
-	genToken: RequestHandler
+	genPath?: string
+	genToken?: RequestHandler
 	validate: (token: string) => boolean
 }
 /**
@@ -118,14 +118,22 @@ export type TokenAuthConfig = {
  */
 export function TokenAuthMiddlewareFactory(cfg: TokenAuthConfig): AuthenticationMiddleware {
 	console.info('Validating token config...')
+	if (cfg.genPath && !cfg.genToken)
+		throw new ConfigError(
+			'Must provide a middleware function to handle generating a token if providing a token generation path',
+		)
+	if (cfg.genToken && !cfg.genPath)
+		throw new ConfigError(
+			'Must provide a token generation path if providing a token generation middleware function',
+		)
 	// Run config validation for this authenticator
 	console.info('Valid token config')
 
 	return (req, res, next) => {
 		try {
-			if (req.path == cfg.genPath) {
+			if (cfg.genPath && req.path == cfg.genPath) {
 				console.debug('Token generation path reached')
-				cfg.genToken(req, res, next)
+				cfg.genToken && cfg.genToken(req, res, next)
 				return
 			}
 
