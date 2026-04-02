@@ -30,7 +30,7 @@
 	"devDependencies": {
 		"@types/lodash": "4.17.24",
 		"@types/react": "~19.2.10",
-		"lodash": "4.17.23",
+		"lodash": "4.18.1",
 		"typescript": "5.9.3"
 	},
 	"files": [
