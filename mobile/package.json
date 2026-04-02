@@ -1,56 +1,56 @@
 {
-	"name": "@herbivore/mobile",
-	"version": "0.1.0",
-	"description": "Herbivore Project Package - Mobile",
-	"license": "MIT",
-	"author": "Herbivore",
-	"scripts": {
-		"build": "tsc && tsc-alias",
-		"clean": "rm -rf lib tsconfig.tsbuildinfo",
-		"rebuild": "npm run clean && npm run build",
-		"test": "vitest",
-		"prepublishOnly": "npm test -- run && npm run rebuild",
-		"publish:prod": "npm publish --access public",
-		"publish:dry": "npm publish --access public --dry-run",
-		"update": "npm install expo@latest --save-peer && expo install --fix"
-	},
-	"peerDependencies": {
-		"expo": "^55.0.6"
-	},
-	"dependencies": {
-		"@react-navigation/core": "^7.16.1",
-		"@react-navigation/native": "^7.1.33",
-		"expo-local-authentication": "~55.0.8",
-		"expo-symbols": "~55.0.5",
-		"react": "19.2.0",
-		"react-native": "0.83.2",
-		"react-native-mmkv": "^4.2.0",
-		"tslib": "2.8.1"
-	},
-	"devDependencies": {
-		"@types/lodash": "4.17.24",
-		"@types/react": "~19.2.10",
-		"lodash": "4.18.1",
-		"typescript": "5.9.3"
-	},
-	"files": [
-		"./src"
-	],
-	"keywords": [
-		"herbivore",
-		"mobile",
-		"expo",
-		"react-native",
-		"rn",
-		"ts"
-	],
-	"homepage": "https://github.com/MultiDrew97/herbivore#readme",
-	"bugs": {
-		"url": "https://github.com/MultiDrew97/herbivore/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/MultiDrew97/herbivore.git",
-		"directory": "mobile"
-	}
+  "name": "@herbivore/mobile",
+  "version": "0.1.0",
+  "description": "Herbivore Project Package - Mobile",
+  "license": "MIT",
+  "author": "Herbivore",
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "clean": "rm -rf lib tsconfig.tsbuildinfo",
+    "rebuild": "npm run clean && npm run build",
+    "test": "vitest",
+    "prepublishOnly": "npm test -- run && npm run rebuild",
+    "publish:prod": "npm publish --access public",
+    "publish:dry": "npm publish --access public --dry-run",
+    "update": "npm install expo@latest --save-peer && expo install --fix"
+  },
+  "peerDependencies": {
+    "expo": "^55.0.9"
+  },
+  "dependencies": {
+    "@react-navigation/core": "^7.17.2",
+    "@react-navigation/native": "^7.2.2",
+    "expo-local-authentication": "~55.0.9",
+    "expo-symbols": "~55.0.5",
+    "react": "19.2.0",
+    "react-native": "0.83.4",
+    "react-native-mmkv": "^4.3.0",
+    "tslib": "2.8.1"
+  },
+  "devDependencies": {
+    "@types/lodash": "4.17.24",
+    "@types/react": "^19.2.14",
+    "lodash": "4.18.1",
+    "typescript": "5.9.3"
+  },
+  "files": [
+    "./src"
+  ],
+  "keywords": [
+    "herbivore",
+    "mobile",
+    "expo",
+    "react-native",
+    "rn",
+    "ts"
+  ],
+  "homepage": "https://github.com/MultiDrew97/herbivore#readme",
+  "bugs": {
+    "url": "https://github.com/MultiDrew97/herbivore/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MultiDrew97/herbivore.git",
+    "directory": "mobile"
+  }
 }
