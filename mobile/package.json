@@ -15,11 +15,15 @@
     "update": "npm install expo@latest --save-peer && expo install --fix"
   },
   "peerDependencies": {
-    "expo": "^55.0.9"
+    "expo": ">=55.0.0",
+    "expo-local-authentication": ">=55.0.0",
+    "expo-symbols": ">=55.0.0",
+    "expo-haptics": ">=55.0.0"
   },
   "dependencies": {
     "@react-navigation/core": "^7.17.2",
     "@react-navigation/native": "^7.2.2",
+    "expo-haptics": "~55.0.17",
     "expo-local-authentication": "~55.0.9",
     "expo-symbols": "~55.0.5",
     "react": "19.2.0",

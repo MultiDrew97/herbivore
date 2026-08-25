@@ -1,15 +1,15 @@
 import { createContext, PropsWithChildren, SetStateAction, useContext, useState } from 'react'
 import { useStorage } from './useStorage'
 
-type Config<T = unknown> = [config: T | null, saveConfig: (newConfig: SetStateAction<T>) => void]
-const ConfigContext = createContext<Config>([null, () => null])
+type Config<T = unknown> = { config: T | null; saveConfig: (newConfig: SetStateAction<T>) => void }
+const ConfigContext = createContext<Config | null>(null)
 
-export function useConfig<T>(): Config<T> {
-	const cfg = useContext<Config<T>>(ConfigContext)
+export function useConfig() {
+	const ctx = useContext(ConfigContext)
 
-	if (!cfg) throw new Error('useConfig must be used from within a ConfigProvider')
+	if (!ctx) throw new Error('useConfig must be used from within a ConfigProvider')
 
-	return cfg
+	return ctx
 	// const { userID } = useSession()
 	// const { storage } = useStorage()
 	// const [config, setConfig] = useState<T>()
@@ -87,22 +87,20 @@ export function useConfig<T>(): Config<T> {
 	// ]
 }
 
-type ConfigProviderProps<T> = PropsWithChildren<{
-	onUpdate?: (cfg: T) => void
-}>
+type ConfigProviderProps<T> = PropsWithChildren<{ onUpdate?: (cfg: Config['config']) => void }>
 export function ConfigProvider<T>({ children, onUpdate }: ConfigProviderProps<T>) {
 	// const [config, setConfig] = useState<T>()
 	const storage = useStorage()
 
 	return (
 		<ConfigContext.Provider
-			value={[
-				storage.getConfig(),
-				(cfg: T) => {
+			value={{
+				config: storage.getConfig(),
+				saveConfig: (cfg: Config['config']) => {
 					storage.setConfig(cfg)
 					onUpdate && onUpdate(cfg)
 				},
-			]}>
+			}}>
 			{children}
 		</ConfigContext.Provider>
 	)
