@@ -1,7 +1,7 @@
 {
 	"version": "2.0.0",
 	"options": {
-		"cwd": "${workspaceFolder}"
+		"cwd": "${workspaceFolder}",
 	},
 	"tasks": [
 		{
@@ -12,7 +12,7 @@
 			"group": "test",
 			"problemMatcher": [],
 			"icon": {
-				"id": "beaker"
+				"id": "beaker",
 			},
 			"presentation": {
 				"echo": true,
@@ -20,8 +20,8 @@
 				"focus": false,
 				"panel": "shared",
 				"clear": true,
-				"showReuseMessage": false
-			}
+				"showReuseMessage": false,
+			},
 		},
 		{
 			"label": "Test Specific Package",
@@ -29,7 +29,7 @@
 			"type": "shell",
 			"command": "npm",
 			"icon": {
-				"id": "beaker"
+				"id": "beaker",
 			},
 			"presentation": {
 				"echo": true,
@@ -37,11 +37,11 @@
 				"focus": false,
 				"panel": "shared",
 				"clear": true,
-				"showReuseMessage": false
+				"showReuseMessage": false,
 			},
 			"args": ["test", "--", "--project", "${input:project}"],
 			"group": "test",
-			"problemMatcher": []
+			"problemMatcher": [],
 		},
 		{
 			"label": "Publish All (Dry)",
@@ -49,16 +49,16 @@
 			"type": "npm",
 			"script": "publish:dry",
 			"icon": {
-				"id": "broadcast"
+				"id": "broadcast",
 			},
-			"problemMatcher": []
+			"problemMatcher": [],
 		},
 		{
 			"label": "Publish All (Prod)",
 			"detail": "Run the publish for all packages in the workspace",
 			"type": "npm",
 			"script": "publish",
-			"problemMatcher": []
+			"problemMatcher": [],
 		},
 		{
 			"label": "Publish Specific Package (Dry)",
@@ -67,9 +67,9 @@
 			"command": "npm",
 			"args": ["run", "publish:dry", "--", "-w", "${input:project}"],
 			"icon": {
-				"id": "broadcast"
+				"id": "broadcast",
 			},
-			"problemMatcher": []
+			"problemMatcher": [],
 		},
 		{
 			"label": "Publish Specific Package (Prod)",
@@ -78,17 +78,17 @@
 			"command": "npm",
 			"args": ["run", "publish", "--", "-w", "${input:project}"],
 			"icon": {
-				"id": "broadcast"
+				"id": "broadcast",
 			},
-			"problemMatcher": []
-		}
+			"problemMatcher": [],
+		},
 	],
 	"inputs": [
 		{
 			"id": "project",
 			"type": "pickString",
 			"options": ["log", "core", "api", "mobile"],
-			"description": "Which Project?"
-		}
-	]
+			"description": "Which Project?",
+		},
+	],
 }
