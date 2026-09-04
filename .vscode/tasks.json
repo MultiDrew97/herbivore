@@ -1,18 +1,19 @@
 {
 	"version": "2.0.0",
 	"options": {
-		"cwd": "${workspaceFolder}",
+		"cwd": "${workspaceFolder}"
 	},
 	"tasks": [
 		{
 			"label": "Test All Packages",
 			"detail": "Test all subpackages within the monorepo",
-			"type": "npm",
-			"script": "test",
+			"type": "shell",
+			"command": "npm",
+			"args": ["test"],
 			"group": "test",
 			"problemMatcher": [],
 			"icon": {
-				"id": "beaker",
+				"id": "beaker"
 			},
 			"presentation": {
 				"echo": true,
@@ -20,16 +21,18 @@
 				"focus": false,
 				"panel": "shared",
 				"clear": true,
-				"showReuseMessage": false,
-			},
+				"showReuseMessage": false
+			}
 		},
 		{
 			"label": "Test Specific Package",
 			"detail": "Test a certain subpackage within the monorepo",
+			"group": "test",
 			"type": "shell",
 			"command": "npm",
+			"args": ["test", "--", "--project", "${input:project}"],
 			"icon": {
-				"id": "beaker",
+				"id": "beaker"
 			},
 			"presentation": {
 				"echo": true,
@@ -37,11 +40,127 @@
 				"focus": false,
 				"panel": "shared",
 				"clear": true,
-				"showReuseMessage": false,
+				"showReuseMessage": false
 			},
-			"args": ["test", "--", "--project", "${input:project}"],
-			"group": "test",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build All Packages",
+			"detail": "Build all subpackages within the monorepo",
+			"group": "build",
+			"type": "shell",
+			"command": "npm",
+			"args": ["run", "build", "--", "--workspaces"],
 			"problemMatcher": [],
+			"icon": {
+				"id": "build"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"showReuseMessage": false
+			}
+		},
+		{
+			"label": "Build Specific Package",
+			"detail": "Build a certain subpackage within the monorepo",
+			"group": "build",
+			"type": "shell",
+			"command": "npm",
+			"icon": {
+				"id": "build"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"showReuseMessage": false
+			},
+			"args": ["run", "build", "--", "-w", "${input:project}"],
+			"problemMatcher": []
+		},
+		{
+			"label": "Rebuild All Packages",
+			"detail": "Rebuild all subpackages within the monorepo",
+			"group": "build",
+			"type": "shell",
+			"command": "npm",
+			"args": ["run", "rebuild", "--", "--workspaces"],
+			"problemMatcher": [],
+			"icon": {
+				"id": "build"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"showReuseMessage": false
+			}
+		},
+		{
+			"label": "Rebuild Specific Package",
+			"detail": "Rebuild a certain subpackage within the monorepo",
+			"group": "build",
+			"type": "shell",
+			"command": "npm",
+			"icon": {
+				"id": "build"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"showReuseMessage": false
+			},
+			"args": ["run", "rebuild", "--", "-w", "${input:project}"],
+			"problemMatcher": []
+		},
+		{
+			"label": "Clean All Packages",
+			"detail": "Clean all subpackages within the monorepo",
+			"type": "shell",
+			"command": "npm",
+			"args": ["run", "clean", "--", "--workspaces"],
+			"problemMatcher": [],
+			"icon": {
+				"id": "clear-all"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"showReuseMessage": false
+			}
+		},
+		{
+			"label": "Clean Specific Package",
+			"detail": "Clean a certain subpackage within the monorepo",
+			"type": "shell",
+			"command": "npm",
+			"icon": {
+				"id": "clear-all"
+			},
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": false,
+				"panel": "shared",
+				"clear": true,
+				"showReuseMessage": false
+			},
+			"args": ["run", "clean", "--", "-w", "${input:project}"],
+			"problemMatcher": []
 		},
 		{
 			"label": "Publish All (Dry)",
@@ -49,16 +168,17 @@
 			"type": "npm",
 			"script": "publish:dry",
 			"icon": {
-				"id": "broadcast",
+				"id": "broadcast"
 			},
-			"problemMatcher": [],
+			"problemMatcher": []
 		},
 		{
 			"label": "Publish All (Prod)",
 			"detail": "Run the publish for all packages in the workspace",
-			"type": "npm",
-			"script": "publish",
-			"problemMatcher": [],
+			"type": "shell",
+			"command": "npm",
+			"args": ["run", "publish:prod", "--", "--workspaces"],
+			"problemMatcher": []
 		},
 		{
 			"label": "Publish Specific Package (Dry)",
@@ -67,9 +187,9 @@
 			"command": "npm",
 			"args": ["run", "publish:dry", "--", "-w", "${input:project}"],
 			"icon": {
-				"id": "broadcast",
+				"id": "broadcast"
 			},
-			"problemMatcher": [],
+			"problemMatcher": []
 		},
 		{
 			"label": "Publish Specific Package (Prod)",
@@ -78,17 +198,17 @@
 			"command": "npm",
 			"args": ["run", "publish", "--", "-w", "${input:project}"],
 			"icon": {
-				"id": "broadcast",
+				"id": "broadcast"
 			},
-			"problemMatcher": [],
-		},
+			"problemMatcher": []
+		}
 	],
 	"inputs": [
 		{
 			"id": "project",
 			"type": "pickString",
 			"options": ["log", "core", "api", "mobile"],
-			"description": "Which Project?",
-		},
-	],
+			"description": "Which Project?"
+		}
+	]
 }

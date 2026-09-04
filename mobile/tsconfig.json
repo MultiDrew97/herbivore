@@ -12,6 +12,6 @@
 		"composite": true,
 		"outDir": "./lib",
 		"rootDir": "./src",
-		"paths": { "@src": ["./index.ts"], "@src/*": ["./*.ts"] }
+		"paths": { "@src/*": ["./src/*"] }
 	}
 }

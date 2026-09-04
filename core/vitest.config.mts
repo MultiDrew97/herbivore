@@ -1,17 +1,10 @@
-import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineProject } from 'vitest/config'
 
 export default defineProject({
-	// resolve: { tsconfigPaths: true },
+	resolve: { tsconfigPaths: true },
 	test: {
 		name: { label: 'CORE', color: 'blue' },
 		globals: true,
+		setupFiles: ['../vitest.setup.ts', './vitest.setup.ts'],
 	},
-	plugins: [
-		tsconfigPaths({
-			configNames: ['tsconfig.spec.json'],
-		}),
-	],
 })
-
-// export default config

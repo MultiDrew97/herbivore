@@ -5,7 +5,9 @@
 	"compilerOptions": {
 		"strict": true,
 		"types": ["node", "vitest/globals"],
-		"paths": {}
+		"paths": {
+			"@base/*": ["./vitest.*"]
+		}
 	},
 	"ts-node": {
 		"transpileOnly": true,

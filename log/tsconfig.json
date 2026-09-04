@@ -6,7 +6,6 @@
 		"composite": true,
 		"tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo",
 		"outDir": "./lib",
-		"baseUrl": "./src",
 		"rootDir": "./src",
 		"paths": {}
 	}

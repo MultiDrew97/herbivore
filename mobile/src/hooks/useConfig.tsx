@@ -1,5 +1,6 @@
 import { createContext, PropsWithChildren, SetStateAction, useContext, useState } from 'react'
 import { useStorage } from './useStorage'
+import { ProviderError } from '@src/errors'
 
 type Config<T = unknown> = { config: T | null; saveConfig: (newConfig: SetStateAction<T>) => void }
 const ConfigContext = createContext<Config | null>(null)
@@ -7,9 +8,9 @@ const ConfigContext = createContext<Config | null>(null)
 export function useConfig() {
 	const ctx = useContext(ConfigContext)
 
-	if (!ctx) throw new Error('useConfig must be used from within a ConfigProvider')
+	if (!ctx) throw new ProviderError('useConfig must be used from within a ConfigProvider')
 
-	return ctx
+	return [ctx.config, ctx.saveConfig] as const
 	// const { userID } = useSession()
 	// const { storage } = useStorage()
 	// const [config, setConfig] = useState<T>()

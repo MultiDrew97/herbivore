@@ -7,7 +7,6 @@
 	"compilerOptions": {
 		"outDir": "./lib/spec",
 		"rootDir": ".",
-		"baseUrl": ".",
 		"paths": {
 			"@base/*": ["../vitest.*.ts"],
 			"@spec/*": ["./vitest.*.ts"],

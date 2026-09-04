@@ -5,13 +5,12 @@
 	"compilerOptions": {
 		"outDir": "./lib",
 		"rootDir": "./src",
-		"baseUrl": "./src",
 		"tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo",
 		"paths": {
-			"@utils": ["./utils/index"],
-			"@utils/*": ["./utils/*"],
-			"@models": ["./models/index"],
-			"@models/*": ["./models/*"]
+			"@utils": ["./src/utils/index"],
+			"@utils/*": ["./src/utils/*"],
+			"@models": ["./src/models/index"],
+			"@models/*": ["./src/models/*"]
 		}
 	}
 }

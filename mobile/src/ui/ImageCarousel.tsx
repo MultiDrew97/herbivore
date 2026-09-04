@@ -1,5 +1,6 @@
 import { PropsWithoutRef, useCallback, useEffect, useState } from 'react'
 import {
+	ColorValue,
 	Image,
 	ImageSourcePropType,
 	ImageStyle,
@@ -11,16 +12,17 @@ import {
 	View,
 	ViewStyle,
 } from 'react-native'
-import IconSymbol, { IconSymbolProps } from './IconSymbol'
+import IconSymbol from '@src/ui/IconSymbol'
 
 type ImageCarouselProps = PropsWithoutRef<{
 	images: ImageSourcePropType[]
 	style?: StyleProp<ViewStyle>
 	imageStyle?: StyleProp<ImageStyle>
-	color: IconSymbolProps['color']
+	color?: ColorValue
 }>
 export default function ImageCarousel({ images, style, imageStyle, color }: ImageCarouselProps) {
 	const [idx, setIdx] = useState<number>(0)
+
 	const changeImage = useCallback(
 		(_event: NativeSyntheticEvent<NativeScrollEvent>) => {
 			console.debug('Changing image...')
@@ -50,9 +52,12 @@ export default function ImageCarousel({ images, style, imageStyle, color }: Imag
 	}, [images])
 
 	return (
-		<View style={[styles.container, style]}>
+		<View
+			testID='carousel'
+			style={[styles.container, style]}>
 			<ScrollView
 				horizontal
+				testID='carousel-scroll'
 				onScrollEndDrag={changeImage}
 				scrollEnabled={images.length > 1}
 				contentContainerStyle={styles.imgContainer}>
@@ -61,6 +66,7 @@ export default function ImageCarousel({ images, style, imageStyle, color }: Imag
 						idx == i && (
 							<Image
 								key={i}
+								testID={`image-${i}`}
 								style={[styles.imgs, imageStyle]}
 								source={img}
 							/>
@@ -71,8 +77,9 @@ export default function ImageCarousel({ images, style, imageStyle, color }: Imag
 				{images.map((_, i) => (
 					<IconSymbol
 						key={i}
+						testID={`indicator-${i}`}
 						name={idx != i ? 'circle' : 'inset.filled.circle'}
-						color={color}
+						color={color ?? 'blue'}
 						size={16}
 					/>
 				))}

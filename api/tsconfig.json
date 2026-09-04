@@ -6,11 +6,10 @@
 		"composite": true,
 		"outDir": "./lib",
 		"rootDir": "./src",
-		"baseUrl": "./",
 		"tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo",
 		"paths": {
-			"@src": ["src/index.ts"],
-			"@src/*": ["src/*.ts"]
+			"@src": ["./src/index.ts"],
+			"@src/*": ["./src/*.ts"]
 		}
 	}
 }

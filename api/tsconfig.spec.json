@@ -7,10 +7,10 @@
 		"outDir": "./lib/spec",
 		"rootDir": ".",
 		"paths": {
-			"@base/*": ["../vitest.*.ts"],
-			"@spec/*": ["./vitest.*.ts"],
-			"@src": ["./src/index.ts"],
-			"@src/*": ["./src/*.ts"]
+			"@base/*": ["../vitest.*"],
+			"@spec/*": ["./vitest.*"],
+			"@src": ["./src/index"],
+			"@src/*": ["./src/*"]
 		}
 	}
 }

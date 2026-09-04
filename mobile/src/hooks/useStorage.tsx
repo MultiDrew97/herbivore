@@ -1,21 +1,30 @@
+import { ProviderError } from '@src/errors'
 import Constants from 'expo-constants'
-import { createContext, PropsWithChildren, useContext } from 'react'
-import { MMKV, useMMKV } from 'react-native-mmkv'
+import { createContext, PropsWithChildren, useContext, useState } from 'react'
+import { Configuration, useMMKV } from 'react-native-mmkv'
 
-type StorageContext = {
+interface Storage {
 	getUserID: () => string | undefined
 	setUserID: (userID: string) => void
 	getConfig: () => any
 	setConfig: (cfg: any) => void
 }
-const StorageContext = createContext<StorageContext | null>(null)
+const Storage = createContext<Configuration | null>(null)
 
-export function useStorage(): StorageContext {
-	const ctx = useContext(StorageContext)
+export function useStorage(): Storage {
+	const ctx = useContext(Storage)
 
-	if (!ctx) throw new Error('useStorage must be used from within a StorageProvider')
+	if (!ctx) throw new ProviderError('useStorage must be used from within a StorageProvider')
 
-	return ctx
+	console.debug('useStorage: ', ctx)
+	const storage = useMMKV(ctx)
+
+	return {
+		getUserID: () => storage.getString('userID'),
+		setUserID: (userID: string) => storage.set('userID', userID),
+		getConfig: () => JSON.parse(storage.getString('config') ?? 'null'),
+		setConfig: (cfg: any) => storage.set('config', JSON.stringify(cfg)),
+	} as const
 }
 
 type StorageProviderProps = PropsWithChildren<{ id?: string; encryptionKey?: string }>
@@ -28,17 +37,17 @@ export function StorageProvider({
 	 * FIXME: Encryption
 	 * 		[ ]	Determine best way to generate and store encryptionKey
 	 */
-	const storage = useMMKV({ id, encryptionKey })
-
+	// const storage = useMMKV({ id, encryptionKey })
+	const [conf] = useState<Configuration>({ id, encryptionKey })
 	return (
-		<StorageContext.Provider
-			value={{
-				getUserID: () => storage.getString('userID'),
-				setUserID: (userID: string) => storage.set('userID', userID),
-				getConfig: () => JSON.parse(storage.getString('config') ?? 'null'),
-				setConfig: (cfg: any) => storage.set('config', JSON.stringify(cfg)),
-			}}>
+		<Storage.Provider value={conf}>
+			{/* value={{
+				getUserID: () => '', //storage.getString('userID'),
+				setUserID: (userID: string) => null, //storage.set('userID', userID),
+				getConfig: () => {}, //JSON.parse(storage.getString('config') ?? 'null'),
+				setConfig: (cfg: any) => null, // storage.set('config', JSON.stringify(cfg)),
+			}}> */}
 			{children}
-		</StorageContext.Provider>
+		</Storage.Provider>
 	)
 }

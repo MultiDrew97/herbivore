@@ -1,16 +1,20 @@
-import { OpaqueColorValue, Platform } from 'react-native'
-import IconSymbolIos, { IconSymbolIosProps } from './IconSymbol.ios'
-import IconSymbolAndroid, { IconSymbolAndroidProps } from './IconSymbol.android'
+import { SymbolView, SymbolViewProps } from 'expo-symbols'
 import { PropsWithoutRef } from 'react'
+import { ColorValue } from 'react-native'
 
-export type IconSymbolProps<T = unknown> = PropsWithoutRef<{ size?: number; color: string | OpaqueColorValue } & T>
-
-export { IconSymbolIosProps, IconSymbolAndroidProps }
-export type IconProps = IconSymbolIosProps | IconSymbolAndroidProps
-export default function IconSymbol(props: IconProps) {
-	return Platform.select({
-		ios: IconSymbolIos(props as IconSymbolIosProps),
-		android: IconSymbolAndroid(props as IconSymbolAndroidProps),
-		default: null,
-	})
+export type IconSymbolProps = PropsWithoutRef<
+	{
+		color: ColorValue
+	} & Pick<SymbolViewProps, 'name' | 'weight' | 'size' | 'testID' | 'style'>
+>
+export default function IconSymbol({ name, color, style, size = 16, weight = 'regular', ...rest }: IconSymbolProps) {
+	return (
+		<SymbolView
+			weight={weight}
+			tintColor={color}
+			name={name}
+			style={[{ width: size, height: size }, style]}
+			{...rest}
+		/>
+	)
 }

@@ -1,18 +1,18 @@
-import tsconfigPaths from 'vite-tsconfig-paths'
-import { defineProject } from 'vitest/config'
+import { defineProject, UserWorkspaceConfig } from 'vitest/config'
+import { reactNative } from 'vitest-native'
 
 export default defineProject({
-	// resolve: { tsconfigPaths: true },
+	resolve: {
+		tsconfigPaths: true,
+		// alias: { ...jestCompatAliases() },
+	},
 	test: {
 		name: { label: 'MOBILE', color: 'cyan' },
 		globals: true,
 		environment: 'node',
-		setupFiles: ['./vitest.setup.ts'],
+		setupFiles: ['../vitest.setup.ts', './vitest.setup.ts'],
 		globalSetup: ['./vitest.global-setup.ts'],
+		directory: './spec',
 	},
-	plugins: [
-		tsconfigPaths({
-			configNames: ['tsconfig.spec.json'],
-		}),
-	],
-})
+	plugins: [reactNative()],
+} as UserWorkspaceConfig)

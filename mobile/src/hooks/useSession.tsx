@@ -1,5 +1,6 @@
 import { createContext, PropsWithChildren, useCallback, useContext } from 'react'
 import { useStorage } from './useStorage'
+import { ProviderError } from '@src/errors'
 
 /*
 FIXME: Modularity
@@ -8,35 +9,30 @@ I need to determine how to make this session handler modular so that I can use i
 
 I want this package to be able to speed up some dev implementations so that I can use it in any format I wish and not be making so much boiler plate within the child apps
 */
-type PCSessionManager<T = unknown> = {
-	login: (user: T) => void
-	logout: () => void
+type PCSessionManager<T = any> = {
+	login: (user: T) => void | Promise<void>
+	logout: () => void | Promise<void>
 }
 type PCSession<T, B = unknown> = PCSessionManager<T> & {
-	userID: string
+	userID: string | null
 } & B
 
-const SessionManagerContext = createContext<PCSessionManager>({
-	login: () => null,
-	logout: () => null,
-})
+const SessionManagerContext = createContext<PCSessionManager | null>(null)
 
 export default function useSession<T>(): PCSession<T> {
 	const mgr = useContext(SessionManagerContext)
-  const storage = useStorage()
+	const storage = useStorage()
 
-	if (!mgr) {
-		throw new Error('useSession must be used within a SessionProvider')
-	}
+	if (!mgr) throw new ProviderError('useSession must be used within a SessionProvider')
 
-	return { ...mgr, userID: storage.getUserID() }
+	return { ...mgr, userID: storage.getUserID() ?? null }
 }
 
-type SessionProviderProps<T> = PropsWithChildren<{
+type SessionProviderProps<T = unknown> = PropsWithChildren<{
 	onLogin?: (usr: T) => void
 	onLogout?: () => void
 }>
-export function SessionProvider<T>({ children, onLogin, onLogout }: SessionProviderProps<T>) {
+export function SessionProvider<T = unknown>({ children, onLogin, onLogout }: SessionProviderProps<T>) {
 	// const [session, setSession] = useState<UserMeta>({
 	//   userID: storage.getString(STORAGE_KEYS.STORAGE_USER_ID),
 	//   config: JSON.parse(
@@ -47,7 +43,7 @@ export function SessionProvider<T>({ children, onLogin, onLogout }: SessionProvi
 	const login = useCallback(async (user: T) => {
 		try {
 			onLogin && onLogin(user)
-		} catch (err) {
+		} catch (err: any) {
 			console.error('Failed to login: ', err.message)
 			throw err
 		}
