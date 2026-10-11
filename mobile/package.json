@@ -36,7 +36,7 @@
 		"expo-haptics": "57.x",
 		"expo-linking": "57.x",
 		"expo-local-authentication": "57.x",
-		"expo-router": "57.x",
+		"expo-router": "58.x",
 		"expo-symbols": "57.x",
 		"react-native-mmkv": "4.x",
 		"tslib": "2.8.1"
