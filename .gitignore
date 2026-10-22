@@ -1,7 +1,10 @@
 **/.idea
 **/node_modules
+
+# Build Files
 **/lib
-**/tsconfig.tsbuildinfo
+**/*.tsbuildinfo
+
 # **/.vscode
 # !**/.vscode/tasks.json
 .DS_Store
