@@ -4,7 +4,7 @@
 	"exclude": ["node_modules", "lib", "spec"],
 	"compilerOptions": {
 		"composite": true,
-		"tsBuildInfoFile": "./lib/tsconfig.tsbuildinfo",
+		"tsBuildInfoFile": "log.tsbuildinfo",
 		"outDir": "./lib",
 		"rootDir": "./src",
 		"paths": {}
