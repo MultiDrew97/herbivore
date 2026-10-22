@@ -1,4 +1,4 @@
-import { AnotherController, closeTestServer, createTestServer, TestController } from '@spec/helpers'
+import { closeTestServer, createTestServer, TestController } from '@spec/helpers'
 import { TestProject } from 'vitest/node'
 
 export default async function setup(_: TestProject) {

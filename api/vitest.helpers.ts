@@ -1,9 +1,39 @@
-import { DEFAULT_HOST, DEFAULT_PORT, waitFor } from '@base/helpers'
+import { waitFor } from '@base/helpers'
 import { type HerbAPIConfig, createHerbAPI } from '@src'
 import { Controller, ControllerOptions, Route } from '@src/routes'
-import { type NextFunction, type Request, type Response, type RouterOptions } from 'express'
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
+import { type NextFunction, type Request, type Response } from 'express'
 import { createServer, Server } from 'http'
 import { constants } from 'http2'
+import { merge } from 'lodash'
+
+export const DEFAULT_PORT: number = 3000
+export const DEFAULT_HOST: string = 'localhost'
+export const DEFAULT_BASE_URL: string = `http://${DEFAULT_HOST}:${DEFAULT_PORT}/api`
+export const baseAxiosOptions: AxiosRequestConfig = {
+	baseURL: DEFAULT_BASE_URL,
+	headers: {
+		Accept: 'application/json',
+	},
+}
+export async function callAPI(url: string, cfg?: AxiosRequestConfig) {
+	const config = { ...baseAxiosOptions }
+	merge(config, cfg)
+	return axios(url, config).catch(handleError)
+}
+
+/**
+ * A handler for dealing with any fetch errors during tests
+ * @param err The error being handled
+ */
+function handleError(err: AxiosError) {
+	console.error(err.message)
+	console.error(err.stack)
+	console.error(err.toJSON())
+	console.error(err.response?.status)
+	console.error(err.response?.data)
+	return Promise.reject(err)
+}
 
 export const prefix: string = '/test'
 function preRouteRunner(req: Request, res: Response, next: NextFunction) {
