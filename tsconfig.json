@@ -1,14 +1,32 @@
 {
-	"files": [],
-	"include": [],
-	"references": [
-		{ "path": "./core" },
-		{ "path": "./core/tsconfig.spec.json" },
-		{ "path": "./api" },
-		{ "path": "./api/tsconfig.spec.json" },
-		{ "path": "./log" },
-		{ "path": "./log/tsconfig.spec.json" },
-		{ "path": "./mobile" },
-		{ "path": "./mobile/tsconfig.spec.json" }
-	]
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "./core"
+    },
+    {
+      "path": "./core/tsconfig.spec.json"
+    },
+    {
+      "path": "./api"
+    },
+    {
+      "path": "./api/tsconfig.spec.json"
+    },
+    {
+      "path": "./log"
+    },
+    {
+      "path": "./log/tsconfig.spec.json"
+    },
+    {
+      "path": "./mobile"
+    },
+    {
+      "path": "./mobile/tsconfig.spec.json"
+    }
+  ],
+  "compilerOptions": {},
+  "extends": "expo/tsconfig.base"
 }

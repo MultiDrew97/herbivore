@@ -5,7 +5,9 @@ export default defineConfig({
 	resolve: { tsconfigPaths: true },
 	test: {
 		name: 'HERBIVORE',
-		silent: true,
+		// silent: true,
+		// watch: false,
+		// detectAsyncLeaks: true,
 		projects: pkg.workspaces.map((w) => `./${w}/vitest.config.mts`),
 	},
 })
