@@ -78,8 +78,7 @@
 				"reveal": "always",
 				"focus": false,
 				"panel": "shared",
-				"clear": true,
-				"showReuseMessage": false
+				"clear": true
 			},
 			"args": ["run", "build", "--", "-w", "${input:project}"],
 			"problemMatcher": []
