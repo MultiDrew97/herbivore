@@ -1,3 +1,4 @@
+import Icon from '@src/ui/Icon'
 import { PropsWithoutRef, useCallback, useEffect, useState } from 'react'
 import {
 	ColorValue,
@@ -12,22 +13,34 @@ import {
 	View,
 	ViewStyle,
 } from 'react-native'
-import IconSymbol from '@src/ui/IconSymbol'
 
-type ImageCarouselProps = PropsWithoutRef<{
+export type ImageCarouselProps = PropsWithoutRef<{
+	/** The images to display within the carousel */
 	images: ImageSourcePropType[]
+	/** The style of the carousel */
 	style?: StyleProp<ViewStyle>
+	/** The style to apply to the images */
 	imageStyle?: StyleProp<ImageStyle>
+	/** The color of the image indicators */
 	color?: ColorValue
+	/** Whether to hide the indicators */
+	hideIndicators?: boolean
 }>
-export default function ImageCarousel({ images, style, imageStyle, color }: ImageCarouselProps) {
+export default function ImageCarousel({
+	images,
+	style,
+	imageStyle,
+	color,
+	hideIndicators = false,
+}: ImageCarouselProps) {
+	// const idx = useRef(0)
 	const [idx, setIdx] = useState<number>(0)
 
 	const changeImage = useCallback(
 		(_event: NativeSyntheticEvent<NativeScrollEvent>) => {
 			console.debug('Changing image...')
 
-			console.debug('Type - ', _event.nativeEvent.velocity)
+			console.debug('Velocity - ', _event.nativeEvent.velocity)
 
 			// No velocity present, so don't scroll
 			if (!_event.nativeEvent.velocity) return
@@ -47,8 +60,11 @@ export default function ImageCarousel({ images, style, imageStyle, color }: Imag
 	)
 
 	useEffect(() => {
-		// Used to reset the index when the images are changed
-		setIdx(0)
+		function reset() {
+			// Used to reset the index when the images are changed
+			setIdx(0)
+		}
+		reset()
 	}, [images])
 
 	return (
@@ -66,31 +82,33 @@ export default function ImageCarousel({ images, style, imageStyle, color }: Imag
 						idx == i && (
 							<Image
 								key={i}
-								testID={`image-${i}`}
+								testID={`carousel-image-${i}`}
 								style={[styles.imgs, imageStyle]}
 								source={img}
 							/>
 						)
 				)}
 			</ScrollView>
-			<View style={styles.countContainer}>
-				{images.map((_, i) => (
-					<IconSymbol
-						key={i}
-						testID={`indicator-${i}`}
-						name={idx != i ? 'circle' : 'inset.filled.circle'}
-						color={color ?? 'blue'}
-						size={16}
-					/>
-				))}
-			</View>
+			{!hideIndicators && (
+				<View style={styles.countContainer}>
+					{images.map((_, i) => (
+						<Icon
+							key={i}
+							testID={`carousel-indicator-${i}`}
+							name={idx != i ? 'circle' : 'inset.filled.circle'}
+							color={color}
+							size={16}
+						/>
+					))}
+				</View>
+			)}
 		</View>
 	)
 }
 
 const styles = StyleSheet.create({
 	container: { alignSelf: 'center' } as ViewStyle,
-	imgs: { maxHeight: '100%', maxWidth: '100%', resizeMode: 'cover', borderRadius: 25 } as ImageStyle,
-	imgContainer: { height: '100%', width: '100%', alignSelf: 'center', justifyContent: 'center', flexGrow: 1 },
 	countContainer: { flexDirection: 'row', flexShrink: 1, justifyContent: 'center' },
+	imgContainer: { alignSelf: 'center', flexGrow: 1, height: '100%', justifyContent: 'center', width: '100%' },
+	imgs: { maxHeight: '100%', maxWidth: '100%', resizeMode: 'cover', borderRadius: 25 } as ImageStyle,
 })

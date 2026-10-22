@@ -1,25 +1,20 @@
-import { StorageProvider } from '@src/hooks/useStorage'
-import { render } from '@testing-library/react-native'
-import { handleRenderError } from '@spec/helpers'
+import { herbRender, RenderError } from '@spec/helpers'
+import { ProviderError } from '@src/errors'
 import { ConfigProvider, useConfig } from '@src/hooks/useConfig'
+import { StorageKeys, StorageProvider, useStorage } from '@src/hooks/useStorage'
+import { act, renderHook, waitFor } from '@testing-library/react-native'
 import { PropsWithChildren } from 'react'
 import { Text } from 'react-native'
-import { ProviderError, RenderError } from '@src/errors'
 import { vi } from 'vitest'
 
-let configContext: ReturnType<typeof useConfig> | undefined
+// let configContext: ReturnType<typeof useConfig> | undefined
 
-function ConfigTester() {
-	configContext = useConfig()
-	return <Text>Config Test</Text>
-}
-
-type UpdateFunction = Omit<Parameters<typeof ConfigProvider>[0], 'children'>
-const updateHandler = vi.fn<Exclude<UpdateFunction['onUpdate'], undefined>>((cfg) => {})
-// const updateHandler = jest.fn<
-// 	ReturnType<Exclude<UpdateFunction['onUpdate'], undefined>>,
-// 	Parameters<Exclude<UpdateFunction['onUpdate'], undefined>>
-// >((cfg) => {})
+// function ConfigTester() {
+// 	// configContext = useConfig()
+// 	return <Text>Config Test</Text>
+// }
+type UpdateFunction = Exclude<Omit<Parameters<typeof ConfigProvider>[0], 'children'>['onUpdate'], undefined>
+const updateHandler = vi.fn<UpdateFunction>((cfg) => console.info('Config updated', cfg))
 
 function ConfigWrapper({ children }: PropsWithChildren) {
 	return (
@@ -30,57 +25,49 @@ function ConfigWrapper({ children }: PropsWithChildren) {
 }
 
 describe('<ConfigProvider />', () => {
-	afterEach(() => {
-		configContext?.[1]?.(null)
-		configContext = undefined
-	})
+	// afterEach(() => {
+	// 	configContext?.[1]?.(null)
+	// 	configContext = undefined
+	// })
 
 	test('useConfig throws', async () => {
-		expect(() => render(<ConfigTester />)).rejects.toThrow(ProviderError)
-		expect(configContext).toBeUndefined()
+		await expect(renderHook(useConfig)).rejects.toThrow(ProviderError)
+		await expect(renderHook(useConfig, { wrapper: ConfigWrapper })).resolves.toBeDefined()
 	})
 
 	test('Read Config', async () => {
-		await render(<ConfigTester />, {
-			wrapper: ConfigWrapper,
-		}).catch(handleRenderError)
+		const { result } = await renderHook(useConfig, { wrapper: ConfigWrapper })
 
-		if (!configContext) throw new Error("configContext not set in 'Config Reading' test")
+		const [config, sync] = result.current
 
-		const [config] = configContext
-		expect(config).toBeFalsy()
+		expect(config).toBeNull()
+		const testConfig = {
+			key: 'value',
+		}
+		await waitFor(() => {
+			sync(testConfig)
+		})
+
+		expect(config).toMatchObject(testConfig)
 	})
 
 	test('Update Config', async () => {
-		await render(<ConfigTester />, {
-			wrapper: ({ children }: PropsWithChildren) => (
-				<StorageProvider>
-					<ConfigProvider onUpdate={updateHandler}>{children}</ConfigProvider>
-				</StorageProvider>
-			),
-		}).catch(handleRenderError)
+		const { result: configResult } = await renderHook(useConfig, { wrapper: ConfigWrapper })
+		const { result: storageResult } = await renderHook(useStorage, { wrapper: ConfigWrapper })
 
-		if (!configContext) throw new Error("configContext not set in 'Config Reading' test")
+		const [config, sync] = configResult.current
+		const testConfig = { key: 'value' }
 
-		const [_, sync] = configContext
-		const testConfig: any = {
-			setting1: 'value',
-			setting2: 1,
-		}
-		sync(testConfig)
+		await waitFor(() => sync(testConfig))
 
-		expect(updateHandler).toHaveBeenCalled()
+		expect(JSON.parse(storageResult.current.getString(StorageKeys.Config) ?? 'null')).toMatchObject(testConfig)
+
 		expect(updateHandler).toHaveBeenLastCalledWith(testConfig)
+		expect(config).toMatchObject(testConfig)
 
-		const newConfig: typeof testConfig = {
-			...testConfig,
-			setting1: 'new value',
-			setting2: 2,
-		}
-		sync(newConfig)
+		await waitFor(() => sync(null))
 
-		expect(updateHandler).toHaveBeenCalled()
-		expect(updateHandler).not.toHaveBeenLastCalledWith(testConfig)
-		expect(updateHandler).toHaveBeenLastCalledWith(newConfig)
+		expect(updateHandler).toHaveBeenLastCalledWith(null)
+		expect(config).toBeNull()
 	})
 })

@@ -12,6 +12,11 @@
 		"composite": true,
 		"outDir": "./lib",
 		"rootDir": "./src",
-		"paths": { "@src/*": ["./src/*"] }
+		"tsBuildInfoFile": "mobile.tsbuildinfo",
+		"paths": {
+			"@src": ["./src/index"],
+			"@src/*": ["./src/*"],
+			"@herbivore/eslint-plugin": ["../eslint.config.mjs"]
+		}
 	}
 }

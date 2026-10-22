@@ -1,6 +1,7 @@
-import { createContext, PropsWithChildren, useCallback, useContext } from 'react'
-import { useStorage } from './useStorage'
 import { ProviderError } from '@src/errors'
+import { StorageKeys, useStorage } from '@src/hooks/useStorage'
+import { createContext, PropsWithChildren, useCallback, useContext } from 'react'
+import { useMMKVString } from 'react-native-mmkv'
 
 /*
 FIXME: Modularity
@@ -9,49 +10,63 @@ I need to determine how to make this session handler modular so that I can use i
 
 I want this package to be able to speed up some dev implementations so that I can use it in any format I wish and not be making so much boiler plate within the child apps
 */
-type PCSessionManager<T = any> = {
-	login: (user: T) => void | Promise<void>
-	logout: () => void | Promise<void>
+export type HerbUser = { _id: string; config?: HerbConfig }
+type HerbConfig = Record<string, any> & {
+	theme?: 'light' | 'dark' | 'system' | 'auto'
 }
-type PCSession<T, B = unknown> = PCSessionManager<T> & {
-	userID: string | null
+type SessionManager<T extends HerbUser = any> = {
+	login: (user: T) => Promise<void>
+	logout: () => Promise<void>
+}
+
+type Session<T extends HerbUser, B extends Record<string, any> = Record<string, any>> = SessionManager<T> & {
+	userID: HerbUser['_id'] | null
 } & B
 
-const SessionManagerContext = createContext<PCSessionManager | null>(null)
+const SessionManagerContext = createContext<SessionManager | null>(null)
 
-export default function useSession<T>(): PCSession<T> {
+export function useSession<T extends HerbUser>(): Session<T> {
 	const mgr = useContext(SessionManagerContext)
-	const storage = useStorage()
 
 	if (!mgr) throw new ProviderError('useSession must be used within a SessionProvider')
 
-	return { ...mgr, userID: storage.getUserID() ?? null }
+	const storage = useStorage()
+	const [userID] = useMMKVString(StorageKeys.UserID, storage)
+
+	return { ...mgr, userID: userID ?? null }
 }
 
-type SessionProviderProps<T = unknown> = PropsWithChildren<{
-	onLogin?: (usr: T) => void
-	onLogout?: () => void
+type SessionProviderProps = PropsWithChildren<{
+	onLogin?: (usr: HerbUser['_id']) => Promise<void>
+	onLogout?: () => Promise<void>
 }>
-export function SessionProvider<T = unknown>({ children, onLogin, onLogout }: SessionProviderProps<T>) {
-	// const [session, setSession] = useState<UserMeta>({
-	//   userID: storage.getString(STORAGE_KEYS.STORAGE_USER_ID),
-	//   config: JSON.parse(
-	//     storage.getString(STORAGE_KEYS.STORAGE_USER_CONFIG) ?? 'null',
-	//   ),
-	// });
+export function SessionProvider<T extends HerbUser>({ children, onLogin, onLogout }: SessionProviderProps) {
+	const storage = useStorage()
+	const [_, setID] = useMMKVString(StorageKeys.UserID, storage)
 
-	const login = useCallback(async (user: T) => {
-		try {
-			onLogin && onLogin(user)
-		} catch (err: any) {
-			console.error('Failed to login: ', err.message)
-			throw err
-		}
-	}, [])
+	const login = useCallback(
+		async (user: T) => {
+			try {
+				console.info('Performing login procedure...')
+				setID(user._id)
+				await onLogin?.(user._id)
+			} catch (err: any) {
+				console.error('Failed to login: ', err.message)
+				throw err
+			}
+		},
+		[setID, onLogin]
+	)
 
-	const logout = useCallback(() => {
-		onLogout && onLogout()
-	}, [])
+	const logout = useCallback(async () => {
+		console.info('Performing logout procedure...')
+		console.debug('Current Storage - ', storage.getAllKeys())
+
+		storage.remove(StorageKeys.UserID)
+
+		console.debug('After clear - ', storage.getAllKeys())
+		await onLogout?.()
+	}, [storage, onLogout])
 
 	return (
 		<SessionManagerContext.Provider

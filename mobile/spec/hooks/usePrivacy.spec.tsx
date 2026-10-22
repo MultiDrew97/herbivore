@@ -1,10 +1,8 @@
-import { RenderError } from '@src/errors'
-import PrivacyProvider from '@src/PrivacyProvider'
-import { render } from '@testing-library/react-native'
+import { herbRender } from '@spec/helpers'
+import PrivacyProvider from '@src/hooks/usePrivacy'
 import { PropsWithChildren } from 'react'
 import { AppState, AppStateStatus, Text } from 'react-native'
 import { vi } from 'vitest'
-import { handleRenderError } from '@spec/helpers'
 
 const stateSpy = vi.spyOn(AppState, 'addEventListener')
 
@@ -38,11 +36,9 @@ describe('<PrivacyProvider />', () => {
 	})
 
 	test('Hide Privacy', async () => {
-		const app = await render(<PrivacyTester />, {
-			wrapper: PrivacyWrapper,
-		}).catch(handleRenderError)
+		const app = await herbRender(<PrivacyTester />, PrivacyWrapper)
 
-		if (!app) throw new RenderError('Failed to render')
+		expect(app).toBeDefined()
 
 		stateSpy.mock.lastCall?.[1]?.('active')
 
@@ -51,11 +47,9 @@ describe('<PrivacyProvider />', () => {
 	})
 
 	test('Show Privacy', async () => {
-		const app = await render(<PrivacyTester />, {
-			wrapper: PrivacyWrapper,
-		}).catch(handleRenderError)
+		const app = await herbRender(<PrivacyTester />, PrivacyWrapper)
 
-		if (!app) throw new RenderError('Failed to render')
+		expect(app).toBeDefined()
 
 		stateSpy.mock.lastCall?.[1]?.('background')
 

@@ -1,30 +1,23 @@
 import { ProviderError } from '@src/errors'
 import Constants from 'expo-constants'
-import { createContext, PropsWithChildren, useContext, useState } from 'react'
-import { Configuration, useMMKV } from 'react-native-mmkv'
+import { createContext, PropsWithChildren, useContext } from 'react'
+import { Configuration, MMKV, useMMKV } from 'react-native-mmkv'
 
-interface Storage {
-	getUserID: () => string | undefined
-	setUserID: (userID: string) => void
-	getConfig: () => any
-	setConfig: (cfg: any) => void
+export enum StorageKeys {
+	UserID = 'userID',
+	Config = 'config',
 }
-const Storage = createContext<Configuration | null>(null)
 
-export function useStorage(): Storage {
-	const ctx = useContext(Storage)
+const StorageContext = createContext<Configuration | null>(null)
 
-	if (!ctx) throw new ProviderError('useStorage must be used from within a StorageProvider')
+export function useStorage(cfg?: Partial<Configuration>): MMKV {
+	const baseCfg = useContext(StorageContext)
 
-	console.debug('useStorage: ', ctx)
-	const storage = useMMKV(ctx)
+	if (!baseCfg) throw new ProviderError('useStorage must be used from within a StorageProvider')
 
-	return {
-		getUserID: () => storage.getString('userID'),
-		setUserID: (userID: string) => storage.set('userID', userID),
-		getConfig: () => JSON.parse(storage.getString('config') ?? 'null'),
-		setConfig: (cfg: any) => storage.set('config', JSON.stringify(cfg)),
-	} as const
+	const storage = useMMKV(baseCfg)
+
+	return storage
 }
 
 type StorageProviderProps = PropsWithChildren<{ id?: string; encryptionKey?: string }>
@@ -38,16 +31,5 @@ export function StorageProvider({
 	 * 		[ ]	Determine best way to generate and store encryptionKey
 	 */
 	// const storage = useMMKV({ id, encryptionKey })
-	const [conf] = useState<Configuration>({ id, encryptionKey })
-	return (
-		<Storage.Provider value={conf}>
-			{/* value={{
-				getUserID: () => '', //storage.getString('userID'),
-				setUserID: (userID: string) => null, //storage.set('userID', userID),
-				getConfig: () => {}, //JSON.parse(storage.getString('config') ?? 'null'),
-				setConfig: (cfg: any) => null, // storage.set('config', JSON.stringify(cfg)),
-			}}> */}
-			{children}
-		</Storage.Provider>
-	)
+	return <StorageContext.Provider value={{ id, encryptionKey }}>{children}</StorageContext.Provider>
 }

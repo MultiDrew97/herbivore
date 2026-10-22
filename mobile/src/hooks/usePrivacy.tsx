@@ -1,24 +1,25 @@
-import { createContext, PropsWithChildren, useCallback, useEffect } from 'react'
+import { PropsWithChildren, useCallback, useEffect } from 'react'
 import { AppState, AppStateStatus } from 'react-native'
-
-const PrivacyContext = createContext<boolean>(false)
 
 type PrivacyProviderProps = PropsWithChildren<{
 	onShowPrivacy?: (state: AppStateStatus) => void | Promise<void>
 	onHidePrivacy?: (state: AppStateStatus) => void | Promise<void>
 }>
 export default function PrivacyProvider({ children, onShowPrivacy, onHidePrivacy }: PrivacyProviderProps) {
-	const stateHandler = useCallback((status: AppStateStatus) => {
-		console.debug('Current State - ', status)
+	const stateHandler = useCallback(
+		(status: AppStateStatus) => {
+			console.debug('Current State - ', status)
 
-		switch (status) {
-			case 'active':
-				onHidePrivacy?.(status)
-				break
-			default:
-				onShowPrivacy?.(status)
-		}
-	}, [])
+			switch (status) {
+				case 'active':
+					onHidePrivacy?.(status)
+					break
+				default:
+					onShowPrivacy?.(status)
+			}
+		},
+		[onHidePrivacy, onShowPrivacy]
+	)
 	useEffect(() => {
 		const listeners = [AppState.addEventListener('change', stateHandler)]
 

@@ -1,3 +1,4 @@
+import ExpoConsts from 'expo-constants'
 import { authenticateAsync, hasHardwareAsync, isEnrolledAsync } from 'expo-local-authentication'
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useState } from 'react'
 
@@ -20,10 +21,10 @@ export default function useBiometrics(): Biometrics {
 
 		const res = await authenticateAsync()
 
-		if (res.success != true) {
-			res.warning && console.warn('Biometrics Warning: ', res.warning)
-			throw res.error
-		}
+		if (res.success == true) return
+
+		if (res.warning) console.warn('Biometrics Warning: ', res.warning)
+		throw res.error
 	}, [ctx])
 
 	return { available: ctx.available, register: ctx.register, trigger }
@@ -34,8 +35,14 @@ export function BiometricsProvider({ children }: BiometricsProps) {
 	const [available, setAvailable] = useState(false)
 
 	const register = useCallback(() => {
+		authenticateAsync({
+			disableDeviceFallback: true,
+			promptDescription: 'Register Biometrics',
+			promptMessage: `Register Biometrics for ${ExpoConsts.expoConfig?.name ?? 'the App'}`,
+			promptSubtitle: `Allow ${ExpoConsts.expoConfig?.name ?? 'the App'} to use biometrics?`,
+		})
 		setAvailable(true)
-	}, [available])
+	}, [])
 
 	useEffect(() => {
 		async function supportsBiometrics() {

@@ -1,6 +1,6 @@
-import { createContext, PropsWithChildren, SetStateAction, useContext, useState } from 'react'
-import { useStorage } from './useStorage'
 import { ProviderError } from '@src/errors'
+import { createContext, PropsWithChildren, SetStateAction, useContext, useEffect, useState } from 'react'
+import { StorageKeys, useStorage } from './useStorage'
 
 type Config<T = unknown> = { config: T | null; saveConfig: (newConfig: SetStateAction<T>) => void }
 const ConfigContext = createContext<Config | null>(null)
@@ -88,18 +88,31 @@ export function useConfig() {
 	// ]
 }
 
-type ConfigProviderProps<T> = PropsWithChildren<{ onUpdate?: (cfg: Config['config']) => void }>
-export function ConfigProvider<T>({ children, onUpdate }: ConfigProviderProps<T>) {
-	// const [config, setConfig] = useState<T>()
+type ConfigProviderProps = PropsWithChildren<{ onUpdate?: (cfg: Config['config']) => void }>
+export function ConfigProvider<T = unknown>({ children, onUpdate }: ConfigProviderProps) {
+	const [config, setConfig] = useState<T | null>(null)
 	const storage = useStorage()
+
+	useEffect(() => {
+		const listeners = [
+			storage.addOnValueChangedListener((key) => {
+				if (key != StorageKeys.Config) return
+
+				console.info('Updating config in from storage')
+				setConfig(JSON.parse(storage.getString(StorageKeys.Config) ?? 'null'))
+			}),
+		]
+
+		return listeners.forEach((l) => l.remove())
+	})
 
 	return (
 		<ConfigContext.Provider
 			value={{
-				config: storage.getConfig(),
+				config,
 				saveConfig: (cfg: Config['config']) => {
-					storage.setConfig(cfg)
-					onUpdate && onUpdate(cfg)
+					storage.set(StorageKeys.Config, JSON.stringify(cfg))
+					onUpdate?.(cfg)
 				},
 			}}>
 			{children}
