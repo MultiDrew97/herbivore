@@ -1,6 +1,5 @@
-import { isEmpty } from 'lodash'
-import { Md5 } from 'ts-md5'
 import { ArgumentError } from '@utils/errors'
+import { Md5 } from 'ts-md5'
 
 /**
  * Encrypt a given string value using the provided salt value
@@ -30,7 +29,7 @@ export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve,
 export function formatPhone(phone: string, ext?: string): string {
 	phone = phone.trim().replaceAll(/\D/g, '')
 
-	if (isEmpty(phone)) return ''
+	if (!phone || phone == '') return ''
 	if (phone.length < 10) throw new ArgumentError('Invalid length')
 
 	console.debug(phone)
