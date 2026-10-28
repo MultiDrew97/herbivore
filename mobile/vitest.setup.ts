@@ -1,9 +1,13 @@
 // import { silenceLogs } from '@spec/helpers'
 // silenceLogs('debug', 'warn', 'info', 'log')
 
-// vi.mock('expo-symbols', () => ({
-// 	SymbolView: (props: Record<string, unknown>) => React.createElement('View', props),
-// }))
+import { DefaultTheme } from 'expo-router'
+import { createElement } from 'react'
+import { vi } from 'vitest'
+
+vi.mock('expo-symbols', () => ({
+	SymbolView: (props: import('expo-symbols').SymbolViewProps) => createElement('View', props),
+}))
 
 // vi.mock('expo-haptics', () => ({
 // 	ImpactFeedbackStyle: {
@@ -16,11 +20,11 @@
 // 	impactAsync: vi.fn(async (style: ImpactFeedbackStyle) => console.info(`${style} style impact...`)),
 // }))
 
-// vi.mock('expo-router', () => ({
-// 	useTheme: () => DefaultTheme,
-// 	DefaultTheme: {
-// 		colors: {
-// 			primary: 'blue',
-// 		},
-// 	},
-// }))
+vi.mock('expo-router', () => ({
+	useTheme: () => DefaultTheme,
+	DefaultTheme: {
+		colors: {
+			primary: 'blue',
+		},
+	},
+}))

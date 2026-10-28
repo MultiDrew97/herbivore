@@ -2,20 +2,20 @@ import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { StyleProp, StyleSheet, TouchableOpacity, TouchableOpacityProps, ViewStyle } from 'react-native'
 import Icon, { IconProps } from './Icon'
 
-export type IconButtonProps = Pick<TouchableOpacityProps, 'onPress' | 'onLongPress' | 'style' | 'testID' | 'disabled'> &
+type IconButtonProps = Pick<TouchableOpacityProps, 'onPress' | 'onLongPress' | 'style' | 'testID' | 'disabled'> &
 	Pick<IconProps, 'name' | 'size' | 'color'> & {
 		iconStyle?: StyleProp<ViewStyle>
 	}
 export default function IconButton({
 	testID,
 	name,
-	onPress,
-	onLongPress,
 	style,
 	iconStyle,
 	color,
 	disabled,
 	size,
+	onPress,
+	onLongPress,
 }: IconButtonProps) {
 	return (
 		<>

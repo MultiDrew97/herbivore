@@ -1,5 +1,5 @@
 import { useTheme } from 'expo-router'
-import { SymbolView, SymbolViewProps } from 'expo-symbols'
+import { SymbolView, type SymbolViewProps } from 'expo-symbols'
 import { PropsWithoutRef } from 'react'
 import { ColorValue } from 'react-native'
 

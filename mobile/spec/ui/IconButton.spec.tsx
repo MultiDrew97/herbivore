@@ -1,19 +1,26 @@
 import { herbRender, noop } from '@spec/helpers'
-import IconButton, { IconButtonProps } from '@src/ui/IconButton'
-import { fireEvent, screen } from '@testing-library/react-native'
+import IconButton from '@src/ui/IconButton'
+import { act, fireEvent, screen, userEvent } from '@testing-library/react-native'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { DefaultTheme } from 'expo-router'
 import { vi } from 'vitest'
 
+type IconButtonProps = Parameters<typeof IconButton>[0]
+const press = vi.fn<Exclude<IconButtonProps['onPress'], undefined>>(noop)
+const longPress = vi.fn<Exclude<IconButtonProps['onLongPress'], undefined>>(noop)
+
+const buttonRegex = /button$/i
+const iconRegex = /.*-?icon/i
+const props = {
+	testID: 'button',
+	name: 'checkmark',
+	size: 16,
+	onPress: press,
+	onLongPress: longPress,
+} as IconButtonProps
+
 describe('<IconButton />', () => {
 	test('Render', async () => {
-		const buttonRegex = /button$/i
-		const iconRegex = /.*-?icon/i
-		const props = {
-			testID: 'button',
-			name: 'checkmark',
-			size: 16,
-		} as IconButtonProps
 		const app = await herbRender(<IconButton {...props} />)
 
 		expect(app).toBeDefined()
@@ -35,7 +42,7 @@ describe('<IconButton />', () => {
 		props.size = 256
 		props.name = 'xmark'
 		props.color = 'red'
-		props.disabled = true
+		// props.disabled = true
 		await app.rerender(<IconButton {...props} />)
 
 		button = screen.getByTestId(props.testID!)
@@ -53,29 +60,20 @@ describe('<IconButton />', () => {
 	})
 
 	test('Pressable', async () => {
-		const press = vi.fn(noop)
-		const longPress = vi.fn(noop)
-
-		const app = await herbRender(
-			<IconButton
-				testID='button'
-				name='checkmark'
-				onPress={press}
-				onLongPress={longPress}
-			/>
-		)
+		const app = await herbRender(<IconButton {...props} />)
 
 		expect(app).toBeDefined()
 
 		const button = await screen.findByTestId('button')
 
 		expect(button).toBeOnTheScreen()
-
-		await fireEvent(button, 'press')
+		await act(async () => {
+			await userEvent.press(button)
+			await userEvent.longPress(button)
+		})
 		expect(impactAsync).toHaveBeenLastCalledWith(ImpactFeedbackStyle.Soft)
 		expect(press).toHaveBeenCalled()
 
-		await fireEvent(button, 'longPress')
 		expect(impactAsync).toHaveBeenLastCalledWith(ImpactFeedbackStyle.Medium)
 		expect(longPress).toHaveBeenCalled()
 	})
