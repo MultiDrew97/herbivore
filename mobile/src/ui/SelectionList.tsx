@@ -1,4 +1,4 @@
-import { PropsWithChildren, useCallback } from 'react'
+import { PropsWithChildren, useCallback, useState } from 'react'
 import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native'
 import Icon from './Icon'
 
@@ -13,24 +13,15 @@ type SelectionItem<T> = {
 	value: T
 }
 type SelectionListProps<T> = PropsWithChildren<{
-	items: SelectionItem<T>[]
-	// renderItem: (item: SelectionItem<T>) => JSX.Element
 	multiple?: boolean
+	items: SelectionItem<T>[]
 	onSelectionChanged: (selected: SelectionItem<T>[]) => void
 	style?: StyleProp<ViewStyle>
 }>
-export default function SelectionList<T>({
-	items,
-	// renderItem,
-	style,
-	onSelectionChanged,
-	multiple,
-}: SelectionListProps<T>) {
-	// const [selection, setSelection] = useState<SelectionItem<T>[]>(items.filter((i) => i.selected))
-
+export default function SelectionList<T>({ items, style, onSelectionChanged, multiple }: SelectionListProps<T>) {
 	const selectionChanged = useCallback(
 		(item: SelectionItem<T>) => {
-			console.debug('Can Select Multiple? ', multiple)
+			console.debug('Allow Multiple? ', multiple)
 			if (!multiple) {
 				console.debug('Clearing selection list')
 				console.debug(`${items.filter(({ selected }) => selected).length} items selected before...`)
@@ -45,28 +36,6 @@ export default function SelectionList<T>({
 
 			console.debug('Selected Item Index: ', items.filter(({ selected }) => selected)[0]?.index)
 			onSelectionChanged(items.filter((i) => i.selected))
-
-			/* setSelection((prev) => {
-			if (!multiple)
-				prev = prev.map((i) =>
-					i.index != item.index
-						? {
-								...i,
-								selected: false,
-							}
-						: i
-				)
-
-			const idx = prev.findIndex(({ index }) => index == item.index)
-			prev[idx] = {
-				...item,
-				selected: !item.selected,
-			}
-
-			const sel = prev.filter((i) => !i.selected)
-			onSelectionChanged(sel)
-			return sel
-		}) */
 		},
 		[items, multiple, onSelectionChanged]
 	)
