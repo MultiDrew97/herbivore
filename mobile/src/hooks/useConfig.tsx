@@ -1,8 +1,12 @@
 import { ProviderError } from '@src/errors'
-import { createContext, PropsWithChildren, SetStateAction, useContext, useEffect, useState } from 'react'
+import { createContext, PropsWithChildren, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
 import { StorageKeys, useStorage } from './useStorage'
 
-type Config<T = unknown> = { config: T | null; saveConfig: (newConfig: SetStateAction<T>) => void }
+/* FIXME: Constraint this generification better */
+type Config<T = any> = {
+	config: T | null
+	saveConfig: (newConfig: SetStateAction<T>) => void
+}
 const ConfigContext = createContext<Config | null>(null)
 
 export function useConfig() {
@@ -10,87 +14,17 @@ export function useConfig() {
 
 	if (!ctx) throw new ProviderError('useConfig must be used from within a ConfigProvider')
 
-	return [ctx.config, ctx.saveConfig] as const
-	// const { userID } = useSession()
-	// const { storage } = useStorage()
-	// const [config, setConfig] = useState<T>()
-	// const [config, setConfig] = useState<IUserConfig>(() =>
-	//   JSON.parse(storage.getString(STORAGE_KEYS.STORAGE_USER_CONFIG) ?? 'null'),
-	// );
-
-	/**
-	 * Apply the config settings to the app, such as theme preferences, notification settings, etc.
-	 * This should be called whenever the config is updated to ensure that the user's preferences are
-	 * reflected in the app immediately.
-	 */
-	// const applyConfig = useCallback(() => {
-	// 	try {
-	// 		if (!config) {
-	// 			console.warn('No config present')
-	// 			return
-	// 		}
-
-	// 		console.info('Applying config...')
-	// 		/*
-	//   This so far is the best way that I know to perform this check. I have my config values set to
-	//   use the same values for light and dark, but didn't have one for system. So, if it's not system,
-	//   use the value from the config itself, otherwise, set to null, assuming it's to be the system
-	// theme.
-
-	// MAYBE: Concerns
-
-	// * Will this need to be updated if different app themes are provided?
-	// - May not even be an issue, since app themes are a work in progress and may not make to prod
-	// */
-	// 		console.debug(`Updating color scheme to '${config.theme}' mode...`)
-	// 		Appearance.setColorScheme(config.theme != 'system' ? config.theme : null)
-
-	// 		console.info('Config has been applied')
-	// 	} catch (err) {
-	// 		console.error(err.message)
-	// 	}
-	// }, [storage])
-
-	/**
-	 * Save the config for the user then return the updated config to the caller.
-	 * This will also apply the changes immediately to the app so that the user's
-	 * preferences are seeen.
-	 * @param newConfig The config to update with
-	 * @returns The updated config
-	 */
-	// const saveConfig = useCallback(
-	// 	async (newConfig: T) => {
-	// 		try {
-	// 			console.debug('Updating config: ', newConfig)
-	// 			const updated = await updateConfig(userID, newConfig)
-	// 			console.debug('Config after update: ', updated)
-	// 			storage.set(STORAGE_KEYS.STORAGE_USER_CONFIG, JSON.stringify(updated))
-
-	// 			// setConfig(updated);
-	// 			applyConfig()
-	// 		} catch (err) {
-	// 			console.error(err.message)
-	// 		}
-	// 	},
-	// 	[storage, userID, applyConfig],
-	// )
-
-	// if (!config) {
-	//   throw new Error('useConfig must be used within a ConfigProvider');
-	// }
-
-	// return [
-	// 	config,
-	// 	(cfg: T) => {
-	// 		console.info('Updating saved config...')
-	// 		setConfig(cfg)
-	// 	},
-	// ]
+	return {
+		current: ctx.config,
+		update: ctx.saveConfig,
+	}
 }
 
-type ConfigProviderProps = PropsWithChildren<{ onUpdate?: (cfg: Config['config']) => void }>
-export function ConfigProvider<T = unknown>({ children, onUpdate }: ConfigProviderProps) {
-	const [config, setConfig] = useState<T | null>(null)
+type ConfigProviderProps<T> = PropsWithChildren<{
+	onUpdate?: (cfg: T) => void
+}>
+export function ConfigProvider<T>({ children, onUpdate }: ConfigProviderProps<T>) {
+	const [cfg, setConfig] = useState<T | null>(null)
 	const storage = useStorage()
 
 	useEffect(() => {
@@ -103,17 +37,23 @@ export function ConfigProvider<T = unknown>({ children, onUpdate }: ConfigProvid
 			}),
 		]
 
-		return listeners.forEach((l) => l.remove())
-	})
+		return () => listeners.forEach((l) => l.remove())
+	}, [storage])
+
+	const saveConfig = useCallback(
+		(newCfg: T) => {
+			storage.set(StorageKeys.Config, JSON.stringify(newCfg))
+			setConfig(newCfg)
+			onUpdate?.(newCfg)
+		},
+		[storage, onUpdate]
+	)
 
 	return (
 		<ConfigContext.Provider
 			value={{
-				config,
-				saveConfig: (cfg: Config['config']) => {
-					storage.set(StorageKeys.Config, JSON.stringify(cfg))
-					onUpdate?.(cfg)
-				},
+				config: cfg,
+				saveConfig,
 			}}>
 			{children}
 		</ConfigContext.Provider>
