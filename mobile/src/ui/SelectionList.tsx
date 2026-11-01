@@ -19,44 +19,45 @@ type SelectionListProps<T> = PropsWithChildren<{
 	style?: StyleProp<ViewStyle>
 }>
 export default function SelectionList<T>({ items, style, onSelectionChanged, multiple }: SelectionListProps<T>) {
+	const [currentSel, setCurrentSel] = useState<Set<number>>(
+		() => new Set(items.filter(({ selected }) => selected).map(({ index }) => index))
+	)
+
 	const selectionChanged = useCallback(
 		(item: SelectionItem<T>) => {
 			console.debug('Allow Multiple? ', multiple)
-			if (!multiple) {
-				console.debug('Clearing selection list')
-				console.debug(`${items.filter(({ selected }) => selected).length} items selected before...`)
-				items.forEach((i) => {
-					if (i.index == item.index) return
-					i.selected = false
-				})
-				console.debug(`${items.filter(({ selected }) => selected).length} items selected after...`)
-			}
+			const newSel = multiple ? new Set(currentSel) : new Set<number>()
 
-			item.selected = !item.selected
+			const updateSel = (currentSel.has(item.index) ? newSel.delete : newSel.add).bind(newSel)
 
-			console.debug('Selected Item Index: ', items.filter(({ selected }) => selected)[0]?.index)
-			onSelectionChanged(items.filter((i) => i.selected))
+			updateSel(item.index)
+
+			setCurrentSel(newSel)
+			onSelectionChanged(
+				items
+					.filter(({ index }) => newSel.has(index))
+					.map((selectedItem): SelectionItem<T> => ({ ...selectedItem, selected: true }))
+			)
 		},
-		[items, multiple, onSelectionChanged]
+		[items, multiple, onSelectionChanged, currentSel]
 	)
 
 	return (
 		<View style={[styles.container, style]}>
 			{items.map((item) => {
-				console.debug(`Item ${item.index}: `, item.value)
-				console.debug(`Item ${item.index} Selected? `, item.selected)
 				return (
 					<TouchableOpacity
 						key={item.index}
 						testID={`list-item-${item.index}`}
+						aria-selected={currentSel.has(item.index)}
+						aria-checked={currentSel.has(item.index)}
 						style={styles.itemContainer}
 						onPress={() => selectionChanged(item)}>
 						<Icon
 							testID={`list-icon-${item.index}`}
-							name={item.selected ? 'checkmark.circle' : 'checkmark.bubble'}
+							name={currentSel.has(item.index) ? 'checkmark' : 'square'}
 							style={styles.icon}
 						/>
-						{/* {renderItem(item)} */}
 						<Text key={item.index}>{item.label}</Text>
 					</TouchableOpacity>
 				)
@@ -75,8 +76,8 @@ const styles = StyleSheet.create({
 	},
 	itemContainer: {
 		alignSelf: 'flex-start',
+		borderWidth: 1,
 		flexDirection: 'row',
 		justifyContent: 'space-evenly',
-		borderWidth: 1,
 	},
 })
