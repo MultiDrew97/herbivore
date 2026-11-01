@@ -1,16 +1,14 @@
-import { defineConfig } from 'eslint/config'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
+import { FlatCompat } from '@eslint/eslintrc'
+import js from '@eslint/js'
+import tsParser from '@typescript-eslint/parser'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactNative from 'eslint-plugin-react-native'
-import tsLint from '@typescript-eslint/eslint-plugin'
-import tsParser from '@typescript-eslint/parser'
+import { defineConfig } from 'eslint/config'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import js from '@eslint/js'
-import { FlatCompat } from '@eslint/eslintrc'
-import baseLintConfig from '../eslint.config.mjs'
-import esmLint from 'typescript-eslint'
+import baseCfg from '../eslint.config.mjs'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -21,18 +19,12 @@ const compat = new FlatCompat({
 })
 
 export default defineConfig([
+	...baseCfg,
 	{
 		basePath: './src',
-		// files: ['**/*.[cm]?[tj]sx?'],
-		extends: compat.config(baseLintConfig[0]),
+		files: ['**/*.{js,jsx,ts,tsx}'],
 		extends: fixupConfigRules(
-			compat.extends(
-				'eslint:recommended',
-				'plugin:react/recommended',
-				'plugin:react-hooks/recommended',
-				'plugin:react-native/all',
-				'plugin:@typescript-eslint/recommended'
-			)
+			compat.extends('plugin:react/recommended', 'plugin:react-hooks/recommended', 'plugin:react-native/all')
 		),
 
 		plugins: {
@@ -45,7 +37,6 @@ export default defineConfig([
 			parser: tsParser,
 			ecmaVersion: 'latest',
 			sourceType: 'module',
-
 			parserOptions: {
 				ecmaFeatures: {
 					jsx: true,
@@ -71,7 +62,7 @@ export default defineConfig([
 			'react-native/no-unused-styles': 'warn',
 			'react-native/no-color-literals': 'off',
 			'react/prop-types': 'off',
-			'@typescript-eslint/no-require-imports': 'off',
+			// '@typescript-eslint/no-require-imports': 'off',
 		},
 	},
 ])
