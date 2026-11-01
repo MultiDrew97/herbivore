@@ -46,12 +46,13 @@ describe('<StorageProvider />', () => {
 			console.debug(`Value changed for '${key}' to ${result.current.getString(key)}`)
 		})
 
-		await waitFor(async () => {
+		await act(async () => {
 			const sub = result.current.addOnValueChangedListener(listener)
 			await rerender(undefined)
 			result.current.set(key, value)
 			value = 'new-value'
 			result.current.set(key, value)
+			sub.remove()
 		})
 
 		expect(listener).toHaveBeenCalledTimes(2)

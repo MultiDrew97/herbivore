@@ -1,18 +1,10 @@
-import { herbRender, RenderError } from '@spec/helpers'
 import { ProviderError } from '@src/errors'
 import { ConfigProvider, useConfig } from '@src/hooks/useConfig'
 import { StorageKeys, StorageProvider, useStorage } from '@src/hooks/useStorage'
-import { act, renderHook, waitFor } from '@testing-library/react-native'
+import { act, renderHook } from '@testing-library/react-native'
 import { PropsWithChildren } from 'react'
-import { Text } from 'react-native'
 import { vi } from 'vitest'
 
-// let configContext: ReturnType<typeof useConfig> | undefined
-
-// function ConfigTester() {
-// 	// configContext = useConfig()
-// 	return <Text>Config Test</Text>
-// }
 type UpdateFunction = Exclude<Omit<Parameters<typeof ConfigProvider>[0], 'children'>['onUpdate'], undefined>
 const updateHandler = vi.fn<UpdateFunction>((cfg) => console.info('Config updated', cfg))
 
@@ -25,11 +17,6 @@ function ConfigWrapper({ children }: PropsWithChildren) {
 }
 
 describe('<ConfigProvider />', () => {
-	// afterEach(() => {
-	// 	configContext?.[1]?.(null)
-	// 	configContext = undefined
-	// })
-
 	test('useConfig throws', async () => {
 		await expect(renderHook(useConfig)).rejects.toThrow(ProviderError)
 		await expect(renderHook(useConfig, { wrapper: ConfigWrapper })).resolves.toBeDefined()
@@ -38,36 +25,33 @@ describe('<ConfigProvider />', () => {
 	test('Read Config', async () => {
 		const { result } = await renderHook(useConfig, { wrapper: ConfigWrapper })
 
-		const [config, sync] = result.current
-
-		expect(config).toBeNull()
+		expect(result.current.current).toBeNull()
 		const testConfig = {
 			key: 'value',
 		}
-		await waitFor(() => {
-			sync(testConfig)
+		await act(async () => {
+			result.current.update(testConfig)
 		})
 
-		expect(config).toMatchObject(testConfig)
+		expect(result.current.current).toMatchObject(testConfig)
 	})
 
 	test('Update Config', async () => {
 		const { result: configResult } = await renderHook(useConfig, { wrapper: ConfigWrapper })
 		const { result: storageResult } = await renderHook(useStorage, { wrapper: ConfigWrapper })
 
-		const [config, sync] = configResult.current
 		const testConfig = { key: 'value' }
 
-		await waitFor(() => sync(testConfig))
+		await act(() => configResult.current.update(testConfig))
 
 		expect(JSON.parse(storageResult.current.getString(StorageKeys.Config) ?? 'null')).toMatchObject(testConfig)
 
 		expect(updateHandler).toHaveBeenLastCalledWith(testConfig)
-		expect(config).toMatchObject(testConfig)
+		expect(configResult.current.current).toMatchObject(testConfig)
 
-		await waitFor(() => sync(null))
+		await act(() => configResult.current.update(null))
 
 		expect(updateHandler).toHaveBeenLastCalledWith(null)
-		expect(config).toBeNull()
+		expect(configResult.current.current).toBeNull()
 	})
 })
