@@ -1,5 +1,4 @@
 import { defineConfig } from 'eslint/config'
-// import {} from 'eslint/core'
 import { fixupConfigRules, fixupPluginRules } from '@eslint/compat'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
@@ -23,8 +22,9 @@ const compat = new FlatCompat({
 
 export default defineConfig([
 	{
-		files: ['**/*.[cm]?[tj]sx?'],
-		// extends: [...baseLintConfig],
+		basePath: './src',
+		// files: ['**/*.[cm]?[tj]sx?'],
+		extends: compat.config(baseLintConfig[0]),
 		extends: fixupConfigRules(
 			compat.extends(
 				'eslint:recommended',
@@ -71,7 +71,6 @@ export default defineConfig([
 			'react-native/no-unused-styles': 'warn',
 			'react-native/no-color-literals': 'off',
 			'react/prop-types': 'off',
-			'@typescript-eslint/no-explicit-any': 'warn',
 			'@typescript-eslint/no-require-imports': 'off',
 		},
 	},
