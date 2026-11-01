@@ -1,6 +1,6 @@
 import { herbRender, noop } from '@spec/helpers'
 import IconButton from '@src/ui/IconButton'
-import { act, fireEvent, screen, userEvent } from '@testing-library/react-native'
+import { screen, userEvent } from '@testing-library/react-native'
 import { impactAsync, ImpactFeedbackStyle } from 'expo-haptics'
 import { DefaultTheme } from 'expo-router'
 import { vi } from 'vitest'
@@ -42,8 +42,12 @@ describe('<IconButton />', () => {
 		props.size = 256
 		props.name = 'xmark'
 		props.color = 'red'
-		// props.disabled = true
-		await app.rerender(<IconButton {...props} />)
+		await app.rerender(
+			<IconButton
+				{...props}
+				disabled={true}
+			/>
+		)
 
 		button = screen.getByTestId(props.testID!)
 		icon = await screen.findByTestId(iconRegex)
@@ -67,14 +71,15 @@ describe('<IconButton />', () => {
 		const button = await screen.findByTestId('button')
 
 		expect(button).toBeOnTheScreen()
-		await act(async () => {
-			await userEvent.press(button)
-			await userEvent.longPress(button)
-		})
-		expect(impactAsync).toHaveBeenLastCalledWith(ImpactFeedbackStyle.Soft)
+		expect(button).toBeEnabled()
+
+		await userEvent.press(button)
+		await userEvent.longPress(button)
+
+		expect(impactAsync).toHaveBeenNthCalledWith(1, ImpactFeedbackStyle.Soft)
 		expect(press).toHaveBeenCalled()
 
-		expect(impactAsync).toHaveBeenLastCalledWith(ImpactFeedbackStyle.Medium)
+		expect(impactAsync).toHaveBeenNthCalledWith(2, ImpactFeedbackStyle.Medium)
 		expect(longPress).toHaveBeenCalled()
 	})
 })
